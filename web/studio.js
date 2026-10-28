@@ -138,7 +138,8 @@ async function openSession(sessionMode, handler, extra = {}) {
     ws.onclose = () => { if (running && s === main) end(); };
   });
   await new Promise((r, j) => { ws.onopen = r; ws.addEventListener("error", j, { once: true }); });
-  ws.send(JSON.stringify({ type: "start", mode: sessionMode, engine: ENGINES[$("engine").value], ...extra }));
+  ws.send(JSON.stringify({ type: "start", mode: sessionMode, bot: $("bot").value,
+    engine: ENGINES[$("engine").value], ...extra }));
   await ready;
   return s;
 }
@@ -228,8 +229,10 @@ $("settings").addEventListener("click", (e) => { if (e.target === $("settings"))
 try {
   $("words").value = localStorage.getItem("unhurried.words") || "";
   $("engine").value = localStorage.getItem("unhurried.engine") || "words_spark";
+  $("bot").value = localStorage.getItem("unhurried.bot") || "assistant";
 } catch {}
 $("words").addEventListener("change", () => { try { localStorage.setItem("unhurried.words", $("words").value); } catch {} });
+$("bot").addEventListener("change", () => { try { localStorage.setItem("unhurried.bot", $("bot").value); } catch {} });
 $("engine").addEventListener("change", () => { try { localStorage.setItem("unhurried.engine", $("engine").value); } catch {} });
 
 // Orb follows the voice level, smoothed.

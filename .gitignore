@@ -14,3 +14,8 @@ __pycache__/
 runs/
 bench/audio_private/
 .pytest_cache/
+
+# Voice clone environment (large, local only)
+.venv-clone/
+.clone-pkgs/
+studio_data/

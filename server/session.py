@@ -14,7 +14,7 @@ from typing import Awaitable, Callable
 
 from server import llm
 from server.audio_router import AudioRouter
-from server.bot.booking_bot import BookingBot, BookingStore
+from server.bot.booking_bot import ASSISTANT_SYSTEM, BookingBot, BookingStore
 from server.confirm import ConfirmGate, spoken_answer
 from server.engine import Engine
 from server.rebuild import rebuild
@@ -49,7 +49,11 @@ class Session:
         store = BookingStore(None if self.bench else RUNS / "bookings.json")
         self.gate = ConfirmGate(self.emit, lambda row: self.log.write("confirms", row),
                                 auto_yes=self.bench or bool(start.get("auto_confirm")))
-        self.bot = (bot_factory or (lambda: BookingBot(store)))()
+        if start.get("bot") == "assistant":
+            default_bot = lambda: BookingBot(store, system=ASSISTANT_SYSTEM, tools=[])  # noqa: E731
+        else:
+            default_bot = lambda: BookingBot(store)  # noqa: E731
+        self.bot = (bot_factory or default_bot)()
         if hasattr(self.bot, "gate"):
             self.bot.gate = self.gate.gate_tool
         self.turns: asyncio.Queue = asyncio.Queue()

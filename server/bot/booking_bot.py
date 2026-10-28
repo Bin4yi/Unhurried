@@ -42,6 +42,20 @@ TOOLS = [
 
 IMPORTANT_TOOLS = {"book_table", "cancel_booking"}
 
+CALM = (
+    "Calm pace: the person may pause or repeat sounds while speaking; that is normal. "
+    "Never hurry them, never finish their sentence for them, and never comment on how "
+    "they speak. Do not repeat a question you asked in your previous reply. Never say "
+    "'sorry, I didn't catch that' twice in a row."
+)
+
+ASSISTANT_SYSTEM = (
+    "You are a friendly, helpful voice assistant. Talk about whatever the person wants: "
+    "answer questions, discuss ideas, help them think or practise explaining something. "
+    "Engage with what they actually said and build on it. Your replies are spoken aloud: "
+    "keep them to two to four short sentences, no lists, no markdown, no emoji. " + CALM
+)
+
 # gate(name, args) -> "yes" | "change"
 Gate = Callable[[str, dict], Awaitable[str]]
 
@@ -88,8 +102,9 @@ class BookingStore:
 
 class BookingBot:
     def __init__(self, store: BookingStore | None = None, gate: Gate = always_yes,
-                 system: str = SYSTEM, chat=llm.chat):
+                 system: str = SYSTEM, chat=llm.chat, tools: list[dict] | None = None):
         self.store = store or BookingStore()
+        self.tools = TOOLS if tools is None else tools
         self.gate = gate
         self.chat = chat
         self.history: list[dict] = [{"role": "system", "content": system}]
@@ -99,7 +114,7 @@ class BookingBot:
         self.history.append({"role": "user", "content": text})
         done: list[dict] = []
         for _ in range(4):  # at most a few tool rounds per turn
-            out = await self.chat(self.history, purpose="bot", tools=TOOLS,
+            out = await self.chat(self.history, purpose="bot", tools=self.tools or None,
                                   reasoning_effort="low", max_tokens=800)
             calls = out["tool_calls"]
             self.history.append({"role": "assistant", "content": out["content"] or None,

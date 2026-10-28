@@ -83,3 +83,17 @@ def test_system_prompt_has_calm_pace_rules():
     assert "never finish their sentence" in SYSTEM
     assert "Do not repeat a question" in SYSTEM
     assert "twice in a row" in SYSTEM
+
+
+def test_assistant_mode_has_no_tools_and_engages():
+    from server.bot.booking_bot import ASSISTANT_SYSTEM
+    seen = {}
+
+    async def chat(messages, **kw):
+        seen.update(kw)
+        return {"content": "Tell me more about the escalation framework.", "tool_calls": []}
+
+    bot = BookingBot(chat=chat, system=ASSISTANT_SYSTEM, tools=[])
+    out = run(bot.respond("My research is about human in the loop escalation"))
+    assert seen["tools"] is None and "book" not in out["reply"].lower()
+    assert "never comment on how" in ASSISTANT_SYSTEM

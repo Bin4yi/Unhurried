@@ -41,7 +41,7 @@
       <div class="stage-body">
         <div>
           <p class="caption" id="caption" aria-live="polite">
-            <span class="hint">Press Begin, then ask to book a table. Pause whenever you need to.</span>
+            <span class="hint">Press Begin and talk. Pause whenever you need to.</span>
           </p>
           <p class="cue" id="cue" role="status">Take your time.</p>
         </div>
@@ -65,7 +65,7 @@
 
     <section class="card convo" aria-labelledby="convo-title">
       <h2 id="convo-title" class="eyebrow">Conversation</h2>
-      <div class="lines" id="lines"><p class="empty">Nothing yet. The assistant books tables at a small restaurant.</p></div>
+      <div class="lines" id="lines"><p class="empty">Nothing yet.</p></div>
       <form class="type-bar" id="type-form">
         <label for="typed" class="sr-only">Type a message</label>
         <input id="typed" type="text" placeholder="Or type. It joins the sentence you are saying." autocomplete="off">
@@ -118,6 +118,13 @@
   <button class="icon-btn close" id="close-settings">Close</button>
   <h2 id="settings-title">Settings</h2>
   <p class="muted">Changes apply when you press Begin.</p>
+
+  <h3>Who you talk to</h3>
+  <label for="bot">Assistant</label>
+  <select id="bot">
+    <option value="assistant">Talk about anything</option>
+    <option value="booking">Book a table (demo with confirm step)</option>
+  </select>
 
   <h3>How Unhurried listens</h3>
   <label for="engine">Turn engine</label>

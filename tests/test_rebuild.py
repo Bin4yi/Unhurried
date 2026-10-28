@@ -106,3 +106,10 @@ def test_spark_error_keeps_code_pass():
     out = run(rebuild("uh two, no, three", chat=broken))
     assert out["clean"] == "Two, no, three" or out["clean"].lower() == "two, no, three"
     assert out["spark"]["error"] == "RuntimeError"
+
+
+def test_long_phrase_repeat_and_single_chip():
+    out, changes = code_pass("I'm going to talk about I'm going to talk about my project in depth in depth")
+    assert out == "I'm going to talk about my project in depth"
+    assert {"from": "I I I I", "to": "I", "kind": "repeat"} in code_pass("I I I I want")[1]
+    assert len(code_pass("I I I I want")[1]) == 1

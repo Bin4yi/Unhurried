@@ -64,7 +64,7 @@ def code_pass(raw: str) -> tuple[str, list[dict]]:
     sub(_STRETCH, lambda m: m.group(1), "stretch")
     sub(_FILLER, lambda m: " ", "filler")
     # repeated words and short phrases: "I I I want" -> "I want", "I want I want" -> "I want"
-    for n in (3, 2, 1):
+    for n in range(1, 9):  # single words first, so "I I I I" is one change, not two
         pat = re.compile(r"\b((?:[\w']+\s+){%d}[\w']+)(?:[\s,]+\1\b)+" % (n - 1), re.I)
         sub(pat, lambda m: m.group(1), "repeat")
     text = re.sub(r"\s+([,.?!])", r"\1", re.sub(r"\s{2,}", " ", text)).strip(" ,")
