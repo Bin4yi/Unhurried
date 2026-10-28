@@ -267,5 +267,15 @@ $("delete").onclick = async () => {
   await fetch(`/studio/${job.id}`, { method: "DELETE" });
   location.reload();
 };
+// Open a saved recording: voice-studio.html?job=<id>
+const saved = new URLSearchParams(location.search).get("job");
+if (saved) {
+  fetch(`/studio/${saved}/reanalyze`, { method: "POST" }).then((r) => r.json()).then(async (j) => {
+    if (!j.id) return;
+    job = j;
+    origBuf = await decodeOriginal();
+    showReview();
+  });
+}
 $("rec").onclick = toggleRecord;
 $("upload").onchange = (e) => e.target.files[0] && process(e.target.files[0], "upload");

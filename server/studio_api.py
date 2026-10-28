@@ -51,6 +51,11 @@ async def get(job_id: str):
     return _view(_job(job_id))
 
 
+@router.post("/{job_id}/reanalyze")
+async def reanalyze(job_id: str):
+    return _view(await jobs.reanalyze(_job(job_id)))
+
+
 @router.post("/{job_id}/edits")
 async def toggle(job_id: str, request: Request):
     body = await request.json()

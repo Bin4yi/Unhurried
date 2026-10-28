@@ -108,6 +108,17 @@ async def create(data: bytes, source: str, keywords: list[str], use_spark: bool 
     return job
 
 
+async def reanalyze(job: dict, use_spark: bool = True) -> dict:
+    """Find the cuts again from the saved recording (after the cut finder improves)."""
+    d = _dir(job["id"])
+    x, rate = render.read_wav_bytes((d / "original.wav").read_bytes())
+    words, acoustic = await asyncio.to_thread(align.align_all, to16k(x, rate), job["transcript"])
+    job["words"] = [w.__dict__ for w in words]
+    job["edits"] = await edits_mod.find_edits(words, acoustic, use_spark=use_spark)
+    save(job)
+    return job
+
+
 def apply_toggles(job: dict, on: dict[str, bool]) -> dict:
     for e in job["edits"]:
         if e["id"] in on:

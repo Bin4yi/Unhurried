@@ -40,22 +40,91 @@ def _edit(kind: str, words: list[Word], i: int, j: int, start: float | None = No
             "text": " ".join(w.text for w in words[i:j + 1]), "words": [i, j], "on": True}
 
 
+VOWELS = set("AEIOUY")
+CHAIN_GAP_S = 0.7     # sounds closer than this belong to one attempt at the word
+HEAD_MAX = 3          # a repeated sound is at most this many letters ("B", "BI", "PER")
+LOOK_BACK_S = 1.5     # how far before the word's aligned start repeats may be found
+
+
+def is_sound_token(tok: str, next_word: str) -> bool:
+    """Transcript tokens that are repeated sounds, not words: 'BBV', 'Pp', 'b-', 'ppp'."""
+    t, n = norm(tok).upper(), norm(next_word).upper()
+    if not t or not n or t[0] != n[0] or len(t) > 4 or t == n:
+        return False
+    # real words almost always have a vowel; "BBV", "Pp", "ppp" do not
+    return tok.endswith("-") or not (set(t) & VOWELS)
+
+
+# Voiced and voiceless pairs sound alike to an acoustic model ("p" is often heard as "b").
+PAIRS = {"B": "P", "P": "B", "D": "T", "T": "D", "G": "K", "K": "G", "C": "K", "V": "F",
+         "F": "V", "Z": "S", "S": "Z"}
+
+
+def _fold(text: str) -> str:
+    """Fold the first letter onto its voiced/voiceless twin, for matching."""
+    if not text:
+        return text
+    c = text[0]
+    return min(c, PAIRS.get(c, c)) + text[1:]
+
+
+def acoustic_chains(word: Word, prev_end: float, acoustic: list[dict]) -> dict | None:
+    """Short sounds heard just before (or at the start of) a word that begin the word,
+    then the word itself: 'B B BI | BE-NOLEDI' for 'Binula', 'B B B | DIAN' for 'period'.
+    Returns the part to cut."""
+    target = _fold(norm(word.text).upper())
+    if not target:
+        return None
+    first = target[0]
+    # the speech model often stretches the word before a block over the repeats,
+    # so look back a little before this word's aligned start
+    window = [a for a in acoustic if prev_end - LOOK_BACK_S <= a["start"] <= word.end]
+    chain: list[dict] = []
+    for k, a in enumerate(window):
+        t = _fold(a["text"])
+        if t[:1] != first:
+            if a["start"] < word.start:
+                chain = []          # something else was said in between
+            elif chain:
+                break               # the rest of the word: the chain is complete
+            continue
+        if chain and a["start"] - chain[-1]["end"] > CHAIN_GAP_S:
+            chain = []
+        chain.append({**a, "fold": t, "next": window[k + 1]["start"] if k + 1 < len(window) else None})
+    if len(chain) < 2:
+        return None
+    heads, body = chain[:-1], chain[-1]
+    # the last attempt must be the word itself: its first letters, a long take of it,
+    # or a short onset that runs straight on into the rest of the word
+    runs_on = body["next"] is not None and body["next"] - body["end"] < 0.35
+    if not (body["fold"][:2] == target[:2] or (len(body["fold"]) >= 4 and len(target) >= 4) or runs_on):
+        return None
+    for h in heads:
+        if h["fold"] == target or len(h["fold"]) > HEAD_MAX:
+            return None     # a whole repeated word (repeat finder) or another real word
+        if not (target.startswith(h["fold"]) or len(h["fold"]) == 1):
+            return None
+    if body["start"] - heads[0]["start"] < 0.12:
+        return None
+    return {"start": heads[0]["start"], "end": body["start"],
+            "text": " ".join(h["text"].lower() + "-" for h in heads)}
+
+
 def find_sounds(words: list[Word], acoustic: list[dict]) -> list[dict]:
     out = []
     for i, w in enumerate(words):
-        if w.text.endswith("-") and i + 1 < len(words):
-            out.append(_edit("sound", words, i, i, end=words[i + 1].start))
+        nxt = words[i + 1] if i + 1 < len(words) else None
+        if nxt and is_sound_token(w.text, nxt.text):
+            # the whole token is a repeated sound: cut it up to where the word starts
+            out.append(_edit("sound", words, i, i, end=nxt.start))
             continue
-        # acoustic: short prefixes of this word heard inside its aligned span
-        target = norm(w.text).upper()
-        inside = [a for a in acoustic if a["start"] >= w.start - 0.05 and a["end"] <= w.end + 0.05]
-        if len(inside) >= 2 and target:
-            last = inside[-1]
-            heads = [a for a in inside[:-1] if target.startswith(a["text"]) and len(a["text"]) <= 3]
-            if heads and last["text"][:1] == target[:1] and last["start"] - w.start > 0.15:
-                out.append({"kind": "sound", "start": round(w.start, 3), "end": round(last["start"], 3),
-                            "text": " ".join(a["text"].lower() + "-" for a in heads), "words": [i, i],
-                            "on": True, "partial": True})
+        if i > 0 and out and out[-1]["words"] == [i - 1, i - 1]:
+            continue        # the token before this word was already cut as a sound
+        prev_end = words[i - 1].end if i > 0 else 0.0
+        c = acoustic_chains(w, prev_end, acoustic)
+        if c:
+            out.append({"kind": "sound", "start": round(c["start"], 3), "end": round(c["end"], 3),
+                        "text": c["text"], "words": [i, i], "on": True, "partial": True})
     return out
 
 

@@ -138,3 +138,36 @@ def test_viterbi_handles_long_recordings():
     states = align.viterbi(em, tokens, blank=0)
     assert len(states) == T and states[-1] >= 2 * n - 1
     assert all(b >= a for a, b in zip(states, states[1:]))   # path only moves forward
+
+
+def test_transcript_sound_token_before_word():
+    w = words([("is", 5.6, 5.8), ("BBV", 5.96, 6.48), ("Binula", 6.96, 7.4)])
+    found = edits.find_sounds(w, [])
+    assert [(e["text"], e["end"]) for e in found] == [("BBV", 6.96)]
+    assert edits.clean_text(w, found) == "is Binula"
+    # real words with repeated letters are not sound repeats
+    for real, nxt in [("test", "this"), ("app", "and"), ("that", "the"), ("will", "work")]:
+        assert not edits.is_sound_token(real, nxt)
+    assert edits.is_sound_token("Pp", "person") and edits.is_sound_token("b-", "book")
+
+
+def test_acoustic_chain_with_voiced_twin_and_look_back():
+    # "period" heard as "B B B DIAN"; the repeats sit inside the previous word's span
+    w = words([("undergraduate", 24.9, 26.3), ("period", 26.7, 27.3)])
+    acoustic = [{"text": "UNDREDUA", "start": 24.9, "end": 25.4},
+                {"text": "BE", "start": 25.58, "end": 25.7}, {"text": "BE", "start": 26.1, "end": 26.2},
+                {"text": "BE", "start": 26.72, "end": 26.8}, {"text": "DIET", "start": 26.9, "end": 27.3}]
+    e = edits.find_sounds(w, acoustic)[0]
+    assert (e["start"], e["end"], e["text"]) == (25.58, 26.72, "be- be-")
+
+
+def test_acoustic_chain_ignores_other_words():
+    # "going to test": "TO" before "TES" is a word, not a repeated sound
+    w = words([("to", 4.0, 4.12), ("test", 4.12, 4.38)])
+    acoustic = [{"text": "TO", "start": 4.0, "end": 4.1}, {"text": "TES", "start": 4.14, "end": 4.38}]
+    assert edits.find_sounds(w, acoustic) == []
+    # a whole repeated word is left to the repeat finder
+    w2 = words([("my", 2.0, 2.2), ("name", 2.5, 2.8)])
+    ac2 = [{"text": "MY", "start": 2.0, "end": 2.2}, {"text": "MY", "start": 2.25, "end": 2.4},
+           {"text": "NAME", "start": 2.5, "end": 2.8}]
+    assert edits.find_sounds(w2, ac2) == []
