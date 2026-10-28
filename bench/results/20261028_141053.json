@@ -1,0 +1,3564 @@
+{
+  "run": "20261028_141053",
+  "date": "2026-10-28 14:24",
+  "clips_file": "bench/clips_synthetic.jsonl",
+  "configs": {
+    "baseline": {
+      "mode": "baseline"
+    },
+    "words": {
+      "mode": "unhurried",
+      "engine": {
+        "spark_check": false
+      }
+    },
+    "unhurried": {
+      "mode": "unhurried",
+      "engine": {
+        "spark_check": true
+      }
+    },
+    "sound": {
+      "mode": "unhurried",
+      "engine": {
+        "spark_check": false,
+        "sound": true
+      }
+    },
+    "sound_spark": {
+      "mode": "unhurried",
+      "engine": {
+        "spark_check": true,
+        "sound": true
+      }
+    }
+  },
+  "summary": {
+    "baseline": {
+      "clips": 24,
+      "stammer_clips": 16,
+      "fluent_clips": 8,
+      "cut_offs": 9,
+      "cut_offs_fluent": 0,
+      "understood": 23,
+      "understood_stammer": 15,
+      "understood_fluent": 8,
+      "fluent_delay_median_s": 0.965,
+      "fluent_delay_p95_s": 1.242,
+      "invented_turns": 0,
+      "turns": 34,
+      "early_eos_stammer": 13,
+      "stammer_clips_with_early_eos": 10,
+      "confirms": 21,
+      "slow_runs": 4
+    },
+    "words": {
+      "clips": 23,
+      "stammer_clips": 15,
+      "fluent_clips": 8,
+      "cut_offs": 0,
+      "cut_offs_fluent": 0,
+      "understood": 21,
+      "understood_stammer": 14,
+      "understood_fluent": 7,
+      "fluent_delay_median_s": 1.305,
+      "fluent_delay_p95_s": 1.436,
+      "invented_turns": 0,
+      "turns": 23,
+      "early_eos_stammer": 10,
+      "stammer_clips_with_early_eos": 8,
+      "confirms": 19,
+      "slow_runs": 4,
+      "added_delay_vs_baseline": {
+        "n": 8,
+        "median_s": 0.32,
+        "p95_s": 0.612
+      }
+    },
+    "unhurried": {
+      "clips": 24,
+      "stammer_clips": 16,
+      "fluent_clips": 8,
+      "cut_offs": 1,
+      "cut_offs_fluent": 0,
+      "understood": 24,
+      "understood_stammer": 16,
+      "understood_fluent": 8,
+      "fluent_delay_median_s": 1.66,
+      "fluent_delay_p95_s": 1.909,
+      "invented_turns": 0,
+      "turns": 25,
+      "early_eos_stammer": 10,
+      "stammer_clips_with_early_eos": 9,
+      "confirms": 22,
+      "slow_runs": 3,
+      "added_delay_vs_baseline": {
+        "n": 8,
+        "median_s": 0.72,
+        "p95_s": 0.904
+      }
+    },
+    "sound": {
+      "clips": 24,
+      "stammer_clips": 16,
+      "fluent_clips": 8,
+      "cut_offs": 3,
+      "cut_offs_fluent": 0,
+      "understood": 23,
+      "understood_stammer": 15,
+      "understood_fluent": 8,
+      "fluent_delay_median_s": 0.985,
+      "fluent_delay_p95_s": 1.474,
+      "invented_turns": 0,
+      "turns": 27,
+      "early_eos_stammer": 18,
+      "stammer_clips_with_early_eos": 12,
+      "confirms": 22,
+      "slow_runs": 2,
+      "added_delay_vs_baseline": {
+        "n": 8,
+        "median_s": 0.04,
+        "p95_s": 0.288
+      }
+    },
+    "sound_spark": {
+      "clips": 24,
+      "stammer_clips": 16,
+      "fluent_clips": 8,
+      "cut_offs": 2,
+      "cut_offs_fluent": 0,
+      "understood": 23,
+      "understood_stammer": 16,
+      "understood_fluent": 7,
+      "fluent_delay_median_s": 1.01,
+      "fluent_delay_p95_s": 1.53,
+      "invented_turns": 0,
+      "turns": 26,
+      "early_eos_stammer": 13,
+      "stammer_clips_with_early_eos": 12,
+      "confirms": 21,
+      "slow_runs": 5,
+      "added_delay_vs_baseline": {
+        "n": 8,
+        "median_s": 0.04,
+        "p95_s": 0.4
+      }
+    }
+  },
+  "rows": {
+    "baseline": [
+      {
+        "clip": "syn_01",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.9,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.64,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_02",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 0.46,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "tomorrow",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I want to",
+          "book a table for four at eight tomorrow."
+        ]
+      },
+      {
+        "clip": "syn_03",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.63,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.28,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 3,
+              "time": "18:00"
+            }
+          }
+        ],
+        "texts": [
+          "Brr, brr, book a table for three at six on Sunday,"
+        ]
+      },
+      {
+        "clip": "syn_04",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": false,
+        "understood": false,
+        "delay_s": 6.11,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 5.38,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [
+          "book a table for two uh",
+          "at nine on Monday"
+        ]
+      },
+      {
+        "clip": "syn_05",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 2.03,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.6,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Tuesday",
+              "people": 5,
+              "time": "12:00"
+            }
+          }
+        ],
+        "texts": [
+          "I, I, I, want a table for five at noon on Tuesday."
+        ]
+      },
+      {
+        "clip": "syn_06",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 2.45,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 5.04,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two, at seven on Friday."
+        ]
+      },
+      {
+        "clip": "syn_07",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 1.24,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 2.0,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Thursday",
+              "people": 6,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "please book a table for",
+          "six at eight on Thursday"
+        ]
+      },
+      {
+        "clip": "syn_08",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 1.45,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 3.06,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 5,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for four, no,",
+          "five people at seven on Sunday."
+        ]
+      },
+      {
+        "clip": "syn_09",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 1.04,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 2.1,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "today",
+              "people": 2,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "Can you book a",
+          "Table for two at eight tonight."
+        ]
+      },
+      {
+        "clip": "syn_10",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 0.76,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 1.3,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Wednesday",
+              "people": 4,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for",
+          "four four at seven on Wednesday"
+        ]
+      },
+      {
+        "clip": "syn_11",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 0.42,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 0.98,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Saturday",
+              "people": 2,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I'd like to book",
+          "a table for two at eight on Saturday"
+        ]
+      },
+      {
+        "clip": "syn_12",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.78,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.96,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Monday",
+              "people": 3,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "um book a table for three at seven on Monday"
+        ]
+      },
+      {
+        "clip": "syn_13",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 0.88,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.22,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:30"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at",
+          "half past seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_14",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 1.05,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.14,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at seven on",
+          "Friday"
+        ]
+      },
+      {
+        "clip": "syn_15",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 3.84,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.88,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "list_bookings",
+            "args": {}
+          }
+        ],
+        "texts": [
+          "What are my bookings"
+        ]
+      },
+      {
+        "clip": "syn_16",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 0.77,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.52,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Saturday",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for F, F,",
+          "Four at eight on Saturday."
+        ]
+      },
+      {
+        "clip": "syn_17",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.17,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_18",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.76,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.04,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "tomorrow",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I want to book a table for four at eight tomorrow."
+        ]
+      },
+      {
+        "clip": "syn_19",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.93,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.96,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 3,
+              "time": "18:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for three at six on Sunday"
+        ]
+      },
+      {
+        "clip": "syn_20",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.87,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "list_bookings",
+            "args": {}
+          }
+        ],
+        "texts": [
+          "What are my bookings?"
+        ]
+      },
+      {
+        "clip": "syn_21",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.12,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Tuesday",
+              "people": 5,
+              "time": "12:00"
+            }
+          }
+        ],
+        "texts": [
+          "Please book a table for five at noon on Tuesday"
+        ]
+      },
+      {
+        "clip": "syn_22",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.75,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.72,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Thursday",
+              "people": 6,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for six at eight on Thursday."
+        ]
+      },
+      {
+        "clip": "syn_23",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.28,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.96,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "today",
+              "people": 2,
+              "time": "21:00"
+            }
+          }
+        ],
+        "texts": [
+          "can I book a table for two at nine tonight?"
+        ]
+      },
+      {
+        "clip": "syn_24",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.0,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.2,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Wednesday",
+              "people": 1,
+              "time": "13:00"
+            }
+          }
+        ],
+        "texts": [
+          "I need a table for one at 1 PM on Wednesday."
+        ]
+      }
+    ],
+    "words": [
+      {
+        "clip": "syn_01",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.9,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two at seven on Friday."
+        ]
+      },
+      {
+        "clip": "syn_02",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.1,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.88,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "tomorrow",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I want to book a table for four at eight tomorrow."
+        ]
+      },
+      {
+        "clip": "syn_03",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.79,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.28,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 3,
+              "time": "18:00"
+            }
+          }
+        ],
+        "texts": [
+          "Brr, book a table for three at six on Sunday"
+        ]
+      },
+      {
+        "clip": "syn_04",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": false,
+        "delay_s": 7.07,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 4.64,
+        "reasons": [
+          "max_wait"
+        ],
+        "tool_calls": [],
+        "texts": [
+          "book a table for two at nine on Monday"
+        ]
+      },
+      {
+        "clip": "syn_05",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.79,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 4.1,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Tuesday",
+              "people": 5,
+              "time": "12:00"
+            }
+          }
+        ],
+        "texts": [
+          "I want a table for five at noon on Tuesday."
+        ]
+      },
+      {
+        "clip": "syn_06",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.73,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 4.48,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_07",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.64,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 3.06,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Thursday",
+              "people": 6,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "please book a table for six at eight on Thursday"
+        ]
+      },
+      {
+        "clip": "syn_08",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.37,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.36,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 5,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for five people at seven on Sunday."
+        ]
+      },
+      {
+        "clip": "syn_09",
+        "kind": "stammer",
+        "error": "ConnectionClosedError(None, None, None)"
+      },
+      {
+        "clip": "syn_10",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.24,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.72,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Wednesday",
+              "people": 4,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for four at seven on Wednesday."
+        ]
+      },
+      {
+        "clip": "syn_11",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.3,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Saturday",
+              "people": 2,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I'd like to book a table for two at eight on Saturday"
+        ]
+      },
+      {
+        "clip": "syn_12",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.1,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Monday",
+              "people": 3,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for three at seven on Monday."
+        ]
+      },
+      {
+        "clip": "syn_13",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.2,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.3,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:30"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at half past seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_14",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.97,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 0.98,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two at seven on Friday."
+        ]
+      },
+      {
+        "clip": "syn_15",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 4.32,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "list_bookings",
+            "args": {}
+          }
+        ],
+        "texts": [
+          "What are my bookings"
+        ]
+      },
+      {
+        "clip": "syn_16",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.01,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.28,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Saturday",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for F, four at eight on Saturday."
+        ]
+      },
+      {
+        "clip": "syn_17",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.25,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.86,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_18",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": false,
+        "delay_s": 1.16,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.96,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [],
+        "texts": [
+          "I want to book a table for four at eight tomorrow."
+        ]
+      },
+      {
+        "clip": "syn_19",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.25,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.04,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 3,
+              "time": "18:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for three at six on Sunday"
+        ]
+      },
+      {
+        "clip": "syn_20",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.43,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.88,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "list_bookings",
+            "args": {}
+          }
+        ],
+        "texts": [
+          "What are my bookings?"
+        ]
+      },
+      {
+        "clip": "syn_21",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.44,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.96,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Tuesday",
+              "people": 5,
+              "time": "12:00"
+            }
+          }
+        ],
+        "texts": [
+          "please book a table for five at noon on Tuesday"
+        ]
+      },
+      {
+        "clip": "syn_22",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.39,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Thursday",
+              "people": 6,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for six at eight on Thursday"
+        ]
+      },
+      {
+        "clip": "syn_23",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.36,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.36,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "today",
+              "people": 2,
+              "time": "21:00"
+            }
+          }
+        ],
+        "texts": [
+          "Can I book a table for two at nine tonight?"
+        ]
+      },
+      {
+        "clip": "syn_24",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.92,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.04,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Wednesday",
+              "people": 1,
+              "time": "13:00"
+            }
+          }
+        ],
+        "texts": [
+          "I need a table for one at 1 PM on Wednesday."
+        ]
+      }
+    ],
+    "unhurried": [
+      {
+        "clip": "syn_01",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.38,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_02",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.42,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "tomorrow",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I want to book a table for four at eight tomorrow"
+        ]
+      },
+      {
+        "clip": "syn_03",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.95,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.54,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 3,
+              "time": "18:00"
+            }
+          }
+        ],
+        "texts": [
+          "brr. Book a table for three at six on Sunday."
+        ]
+      },
+      {
+        "clip": "syn_04",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 5.55,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 5.3,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Monday",
+              "people": 2,
+              "time": "21:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two at nine on Monday."
+        ]
+      },
+      {
+        "clip": "syn_05",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 5.23,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.28,
+        "reasons": [
+          "check_yes"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Tuesday",
+              "people": 5,
+              "time": "12:00"
+            }
+          }
+        ],
+        "texts": [
+          "I. Want a table for five at noon on Tuesday."
+        ]
+      },
+      {
+        "clip": "syn_06",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 2.05,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 2.64,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two, at seven on Friday."
+        ]
+      },
+      {
+        "clip": "syn_07",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 2.12,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 2.4,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Thursday",
+              "people": 6,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "Please book a table for six at eight on Thursday."
+        ]
+      },
+      {
+        "clip": "syn_08",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.61,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.44,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 5,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for five people at seven on Sunday"
+        ]
+      },
+      {
+        "clip": "syn_09",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 3.52,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.62,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "today",
+              "people": 2,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "can you book a table for two at eight tonight"
+        ]
+      },
+      {
+        "clip": "syn_10",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.56,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.12,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Wednesday",
+              "people": 4,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for four at seven on Wednesday"
+        ]
+      },
+      {
+        "clip": "syn_11",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 1.62,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.14,
+        "reasons": [
+          "check_timeout",
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Saturday",
+              "people": 2,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I'd like to book",
+          "a table for two at eight on Saturday."
+        ]
+      },
+      {
+        "clip": "syn_12",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.42,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.06,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Monday",
+              "people": 3,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for three at seven on Monday"
+        ]
+      },
+      {
+        "clip": "syn_13",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.6,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.22,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:30"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two at Half past seven on Friday."
+        ]
+      },
+      {
+        "clip": "syn_14",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.61,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.22,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at seven on Friday."
+        ]
+      },
+      {
+        "clip": "syn_15",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 3.84,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 1.04,
+        "reasons": [
+          "check_yes"
+        ],
+        "tool_calls": [
+          {
+            "name": "list_bookings",
+            "args": {}
+          }
+        ],
+        "texts": [
+          "what are my bookings"
+        ]
+      },
+      {
+        "clip": "syn_16",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.57,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.22,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Saturday",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for F, four at eight on Saturday"
+        ]
+      },
+      {
+        "clip": "syn_17",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.65,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.36,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_18",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.48,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.28,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "tomorrow",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I want to book a table for four at eight tomorrow."
+        ]
+      },
+      {
+        "clip": "syn_19",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.89,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.44,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 3,
+              "time": "18:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for three at six on Sunday."
+        ]
+      },
+      {
+        "clip": "syn_20",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.67,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.88,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "list_bookings",
+            "args": {}
+          }
+        ],
+        "texts": [
+          "What are my bookings?"
+        ]
+      },
+      {
+        "clip": "syn_21",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.84,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.92,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Tuesday",
+              "people": 5,
+              "time": "12:00"
+            }
+          }
+        ],
+        "texts": [
+          "Please book a table for five at noon on Tuesday."
+        ]
+      },
+      {
+        "clip": "syn_22",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.55,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.96,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Thursday",
+              "people": 6,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for six at eight on Thursday."
+        ]
+      },
+      {
+        "clip": "syn_23",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.92,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.28,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "today",
+              "people": 2,
+              "time": "21:00"
+            }
+          }
+        ],
+        "texts": [
+          "can I book a table for two at nine tonight?"
+        ]
+      },
+      {
+        "clip": "syn_24",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.32,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Wednesday",
+              "people": 1,
+              "time": "13:00"
+            }
+          }
+        ],
+        "texts": [
+          "I need a table for one at 1 PM on Wednesday."
+        ]
+      }
+    ],
+    "sound": [
+      {
+        "clip": "syn_01",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.82,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.64,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_02",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.54,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 0.9,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "tomorrow",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I want to, book a table for four at eight tomorrow."
+        ]
+      },
+      {
+        "clip": "syn_03",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.07,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.38,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 3,
+              "time": "18:00"
+            }
+          }
+        ],
+        "texts": [
+          "brr, book a table for three at six on Sunday"
+        ]
+      },
+      {
+        "clip": "syn_04",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": false,
+        "delay_s": 1.31,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 2.1,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [],
+        "texts": [
+          "book a table for two at nine on Monday."
+        ]
+      },
+      {
+        "clip": "syn_05",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.55,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.68,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Tuesday",
+              "people": 5,
+              "time": "12:00"
+            }
+          }
+        ],
+        "texts": [
+          "I want a table for five at noon on Tuesday"
+        ]
+      },
+      {
+        "clip": "syn_06",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 1.57,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.94,
+        "reasons": [
+          "words_sound",
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two",
+          "at seven on Friday."
+        ]
+      },
+      {
+        "clip": "syn_07",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.56,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.54,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Thursday",
+              "people": 6,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "please book a table for six at eight on Thursday"
+        ]
+      },
+      {
+        "clip": "syn_08",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 0.65,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 2,
+        "model_lag_s": 0.98,
+        "reasons": [
+          "words_sound",
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 5,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for four, no",
+          "Five people at seven on Sunday."
+        ]
+      },
+      {
+        "clip": "syn_09",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 2.16,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.46,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "today",
+              "people": 2,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "can you book a table for two at eight tonight"
+        ]
+      },
+      {
+        "clip": "syn_10",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.76,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 2.1,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Wednesday",
+              "people": 4,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for four at seven on Wednesday."
+        ]
+      },
+      {
+        "clip": "syn_11",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 0.5,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 1.22,
+        "reasons": [
+          "words_sound",
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Saturday",
+              "people": 2,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I'd like to book",
+          "a table for two at eight on Saturday."
+        ]
+      },
+      {
+        "clip": "syn_12",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 5.98,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "max_wait"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Monday",
+              "people": 3,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for three at seven on Monday."
+        ]
+      },
+      {
+        "clip": "syn_13",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.72,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 0.9,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:30"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two at half past seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_14",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.57,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 1.14,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_15",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.72,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.96,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "list_bookings",
+            "args": {}
+          }
+        ],
+        "texts": [
+          "What are my bookings?"
+        ]
+      },
+      {
+        "clip": "syn_16",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.61,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 1.76,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Saturday",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for F, four at eight on Saturday"
+        ]
+      },
+      {
+        "clip": "syn_17",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.09,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.44,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two at seven on Friday."
+        ]
+      },
+      {
+        "clip": "syn_18",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.68,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.88,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "tomorrow",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I want to book a table for four at eight tomorrow."
+        ]
+      },
+      {
+        "clip": "syn_19",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.01,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 3,
+              "time": "18:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for three at six on Sunday"
+        ]
+      },
+      {
+        "clip": "syn_20",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.95,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "list_bookings",
+            "args": {}
+          }
+        ],
+        "texts": [
+          "What are my bookings?"
+        ]
+      },
+      {
+        "clip": "syn_21",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.96,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.92,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Tuesday",
+              "people": 5,
+              "time": "12:00"
+            }
+          }
+        ],
+        "texts": [
+          "please book a table for five at noon on Tuesday."
+        ]
+      },
+      {
+        "clip": "syn_22",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.75,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.72,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Thursday",
+              "people": 6,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for six at eight on Thursday."
+        ]
+      },
+      {
+        "clip": "syn_23",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.68,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.44,
+        "reasons": [
+          "rules"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "today",
+              "people": 2,
+              "time": "21:00"
+            }
+          }
+        ],
+        "texts": [
+          "Can I book a table for two at nine tonight?"
+        ]
+      },
+      {
+        "clip": "syn_24",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.08,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.72,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Wednesday",
+              "people": 1,
+              "time": "13:00"
+            }
+          }
+        ],
+        "texts": [
+          "I need a table for one at 1 PM on Wednesday."
+        ]
+      }
+    ],
+    "sound_spark": [
+      {
+        "clip": "syn_01",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.5,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_02",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.34,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 3.3,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "tomorrow",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I want to book a table for four at eight tomorrow"
+        ]
+      },
+      {
+        "clip": "syn_03",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.07,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.3,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 3,
+              "time": "18:00"
+            }
+          }
+        ],
+        "texts": [
+          "Brr, book a table for three at six on Sunday"
+        ]
+      },
+      {
+        "clip": "syn_04",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.31,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 2.82,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Monday",
+              "people": 2,
+              "time": "21:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at nine on Monday"
+        ]
+      },
+      {
+        "clip": "syn_05",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 6.03,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 8.88,
+        "reasons": [
+          "max_wait"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Tuesday",
+              "people": 5,
+              "time": "12:00"
+            }
+          }
+        ],
+        "texts": [
+          "I, want a table for five at noon on Tuesday."
+        ]
+      },
+      {
+        "clip": "syn_06",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 1.25,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 2.74,
+        "reasons": [
+          "words_sound",
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two",
+          "at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_07",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.32,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 2.08,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Thursday",
+              "people": 6,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "Please book a table for six at eight on Thursday."
+        ]
+      },
+      {
+        "clip": "syn_08",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.65,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 2.0,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 5,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for five people at seven on Sunday"
+        ]
+      },
+      {
+        "clip": "syn_09",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 2.32,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.54,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "today",
+              "people": 2,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "Can you book a table for two at eight tonight."
+        ]
+      },
+      {
+        "clip": "syn_10",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.68,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 1.86,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Wednesday",
+              "people": 4,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for four at seven on Wednesday."
+        ]
+      },
+      {
+        "clip": "syn_11",
+        "kind": "stammer",
+        "turns": 2,
+        "cut_off": true,
+        "understood": true,
+        "delay_s": 0.58,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.98,
+        "reasons": [
+          "words_sound",
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Saturday",
+              "people": 2,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "I'd like to book",
+          "a table for two at eight on Saturday."
+        ]
+      },
+      {
+        "clip": "syn_12",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 5.98,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.88,
+        "reasons": [
+          "max_wait"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Monday",
+              "people": 3,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for three at seven on Monday"
+        ]
+      },
+      {
+        "clip": "syn_13",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.96,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.14,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:30"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at half past seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_14",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.89,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.9,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_15",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.88,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.88,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "list_bookings",
+            "args": {}
+          }
+        ],
+        "texts": [
+          "What are my bookings?"
+        ]
+      },
+      {
+        "clip": "syn_16",
+        "kind": "stammer",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.09,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 1.7,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Saturday",
+              "people": 4,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for F four at eight on Saturday"
+        ]
+      },
+      {
+        "clip": "syn_17",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.01,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.98,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Friday",
+              "people": 2,
+              "time": "19:00"
+            }
+          }
+        ],
+        "texts": [
+          "Book a table for two at seven on Friday"
+        ]
+      },
+      {
+        "clip": "syn_18",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": false,
+        "delay_s": 0.76,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 1.06,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [],
+        "texts": [
+          "I want to book a table for four at eight tomorrow."
+        ]
+      },
+      {
+        "clip": "syn_19",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.01,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.96,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Sunday",
+              "people": 3,
+              "time": "18:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for three at six on Sunday."
+        ]
+      },
+      {
+        "clip": "syn_20",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.79,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.96,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "list_bookings",
+            "args": {}
+          }
+        ],
+        "texts": [
+          "what are my bookings?"
+        ]
+      },
+      {
+        "clip": "syn_21",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 0.88,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.2,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Tuesday",
+              "people": 5,
+              "time": "12:00"
+            }
+          }
+        ],
+        "texts": [
+          "please book a table for five at noon on Tuesday."
+        ]
+      },
+      {
+        "clip": "syn_22",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.15,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.56,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Thursday",
+              "people": 6,
+              "time": "20:00"
+            }
+          }
+        ],
+        "texts": [
+          "book a table for six at eight on Thursday."
+        ]
+      },
+      {
+        "clip": "syn_23",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.6,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 1.2,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "today",
+              "people": 2,
+              "time": "21:00"
+            }
+          }
+        ],
+        "texts": [
+          "can I book a table for two at nine tonight?"
+        ]
+      },
+      {
+        "clip": "syn_24",
+        "kind": "fluent",
+        "turns": 1,
+        "cut_off": false,
+        "understood": true,
+        "delay_s": 1.4,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.88,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_table",
+            "args": {
+              "day": "Wednesday",
+              "people": 1,
+              "time": "13:00"
+            }
+          }
+        ],
+        "texts": [
+          "I need a table for one at 1 PM on Wednesday."
+        ]
+      }
+    ]
+  },
+  "usd": 0.5315
+}

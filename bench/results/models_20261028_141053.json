@@ -1,0 +1,51 @@
+{
+  "source": "20261028_141053.json",
+  "points": 29,
+  "models": {
+    "spark": {
+      "check_correct": 28,
+      "check_total": 29,
+      "check_errors": 0,
+      "check_ms_median": 1367,
+      "check_ms_p95": 2924.627,
+      "rebuild_passed_guard": 6,
+      "rebuild_total": 6,
+      "rebuild_ms_median": 1428,
+      "rebuild_examples": [
+        {
+          "raw": "A table for two, no, three people at seven on Sunday",
+          "clean": "A table for three people at seven on Sunday",
+          "guard_fails": []
+        },
+        {
+          "raw": "Book for Friday, I mean Saturday, at eight",
+          "clean": "Book for Saturday, at eight",
+          "guard_fails": []
+        },
+        {
+          "raw": "Book a table for four, actually make it five, on Sunday",
+          "clean": "Book a table for five on Sunday",
+          "guard_fails": []
+        },
+        {
+          "raw": "Can I, sorry, can we book a table for two at nine tonight",
+          "clean": "can we book a table for two at nine tonight",
+          "guard_fails": []
+        },
+        {
+          "raw": "Book a table at seven, no wait, at half past seven on Friday",
+          "clean": "Book a table at half past seven on Friday",
+          "guard_fails": []
+        },
+        {
+          "raw": "I want a table for six, sorry, for five at eight on Thursday",
+          "clean": "I want a table for five at eight on Thursday",
+          "guard_fails": []
+        }
+      ]
+    },
+    "glimmer": {
+      "skipped": "GLIMMER_BASE_URL not set"
+    }
+  }
+}
