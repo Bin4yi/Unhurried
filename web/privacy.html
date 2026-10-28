@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unhurried Privacy</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>Privacy</h1>
+  <p class="sub">What Unhurried keeps, and what it does not.</p>
+
+  <section class="card">
+    <h2>Your voice</h2>
+    <p>Live audio is not stored. It is streamed to Meta's speech service (Muse Voice Transcribe)
+      to turn it into text, and then it is gone. Only the text of the conversation is kept in the
+      session log on the server, and you can delete it.</p>
+  </section>
+
+  <section class="card">
+    <h2>Voice Passport</h2>
+    <p>Your personal profile is encrypted in your browser before it is saved (AES-256-GCM, with a
+      key made from your passphrase using PBKDF2, 600,000 rounds). The server stores only the
+      locked file. It does not have your passphrase and cannot read it.</p>
+    <p>The profile holds: how long your pauses inside a sentence usually are, words you want
+      Unhurried to listen for, word switches you approved, and your settings. It never holds
+      audio, and it never holds a score or rating of your speech.</p>
+    <p>You can export it as a file, import it on another device, or delete it with one button.</p>
+  </section>
+
+  <section class="card">
+    <h2>What leaves your browser during a session</h2>
+    <p>When a session starts, your browser unlocks the profile and sends only what this session
+      needs to the Unhurried server: your maximum wait time, your word list, approved word
+      switches and settings. The server keeps them in memory and forgets them at the end.</p>
+    <p><strong>Honest limit:</strong> your word list is sent to Meta's speech service during the
+      session, so it can listen for those words (keyword biasing). The text of what you say is
+      sent to Meta's language model (Muse Spark) to check if a sentence is finished, to clean up
+      repeated sounds and corrections, and to run the demo booking assistant.</p>
+  </section>
+
+  <section class="card">
+    <h2>Camera</h2>
+    <p>Unhurried does not use your camera.</p>
+  </section>
+
+  <p><a href="index.html">Back</a></p>
+</main>
+</body>
+</html>

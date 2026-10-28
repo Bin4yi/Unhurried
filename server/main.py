@@ -6,10 +6,11 @@ import asyncio
 import json
 from pathlib import Path
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from server import passport_store
 from server.session import Session
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -19,6 +20,35 @@ app = FastAPI(title="Unhurried")
 @app.get("/")
 async def index():
     return RedirectResponse("/web/index.html")
+
+
+@app.post("/profile/{pid}")
+async def save_profile(pid: str, request: Request):
+    """Store an encrypted Voice Passport blob as-is."""
+    try:
+        passport_store.save(pid, await request.json())
+    except (passport_store.PassportError, json.JSONDecodeError) as exc:
+        raise HTTPException(400, str(exc))
+    return {"ok": True}
+
+
+@app.get("/profile/{pid}")
+async def get_profile(pid: str):
+    try:
+        blob = passport_store.load(pid)
+    except passport_store.PassportError as exc:
+        raise HTTPException(400, str(exc))
+    if blob is None:
+        raise HTTPException(404, "no profile")
+    return blob
+
+
+@app.delete("/profile/{pid}")
+async def delete_profile(pid: str):
+    try:
+        return {"deleted": passport_store.delete(pid)}
+    except passport_store.PassportError as exc:
+        raise HTTPException(400, str(exc))
 
 
 @app.websocket("/listen")

@@ -48,7 +48,10 @@ function captions() {
   return { live: $("captions").querySelector(".live"), done: $("captions").querySelector(".committed") };
 }
 
-function showCue(on) { $("cue").classList.toggle("on", on); }
+function showCue(on) {
+  const allowed = !window.unhurriedPrefs || window.unhurriedPrefs.show_cue !== false;
+  $("cue").classList.toggle("on", on && allowed);
+}
 
 function showConfirm(ev) {
   $("confirm-text").textContent = ev ? ev.text : "";
@@ -57,6 +60,7 @@ function showConfirm(ev) {
 }
 
 function onEvent(ev) {
+  window.dispatchEvent(new CustomEvent("unhurried-event", { detail: ev }));
   const c = captions();
   switch (ev.type) {
     case "ready": setStatus(`Listening (${ev.mode})`); if (onReady) onReady(); break;

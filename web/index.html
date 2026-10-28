@@ -33,6 +33,31 @@
     <p class="muted">These words are sent to the speech service during a session to help it hear them.</p>
   </details>
 
+  <details class="card" id="passport">
+    <summary>Voice Passport</summary>
+    <p class="muted">Your personal settings, encrypted in this browser with your passphrase.
+      The server only stores the locked file and cannot read it. No audio, no scores.</p>
+    <p id="pp-status" class="status"></p>
+    <div class="row">
+      <input id="pp-pass" type="password" placeholder="Passphrase" aria-label="Passphrase" autocomplete="current-password">
+      <button id="pp-unlock" class="primary">Unlock</button>
+      <button id="pp-lock">Lock</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input id="pp-words" type="text" placeholder="My words: names, places" aria-label="My words">
+      <button id="pp-save-words">Save words</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <label><input id="pp-show-cue" type="checkbox"> Show "Take your time"</label>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="pp-export">Export</button>
+      <label class="muted">Import <input id="pp-import" type="file" accept="application/json"></label>
+      <button id="pp-delete">Delete everything</button>
+    </div>
+    <p id="pp-msg" class="muted" role="status"></p>
+  </details>
+
   <section class="card">
     <h2>Live captions</h2>
     <div id="captions" class="captions"><span class="committed"></span> <span class="live"></span></div>
@@ -59,5 +84,6 @@
   <p class="muted">Audio is not stored. <a href="privacy.html">Privacy</a></p>
 </main>
 <script type="module" src="app.js"></script>
+<script type="module" src="passport.js"></script>
 </body>
 </html>
