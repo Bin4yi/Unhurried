@@ -15,6 +15,7 @@ from typing import Awaitable, Callable
 from server import llm
 from server.audio_router import AudioRouter
 from server.bot.booking_bot import BookingBot, BookingStore
+from server.confirm import ConfirmGate, spoken_answer
 from server.engine import Engine
 from server.rebuild import rebuild
 from server.runlog import RUNS, RunLog, new_session_id
@@ -45,7 +46,11 @@ class Session:
         self.stream = stream_factory(BOT_KEYWORDS + user_words)
         self.router = AudioRouter(self.stream, self.on_event)
         store = BookingStore(None if self.bench else RUNS / "bookings.json")
+        self.gate = ConfirmGate(self.emit, lambda row: self.log.write("confirms", row),
+                                auto_yes=self.bench or bool(start.get("auto_confirm")))
         self.bot = (bot_factory or (lambda: BookingBot(store)))()
+        if hasattr(self.bot, "gate"):
+            self.bot.gate = self.gate.gate_tool
         self.turns: asyncio.Queue = asyncio.Queue()
         self.last_speech_end: float | None = None
         self._tasks: list[asyncio.Task] = []
@@ -124,6 +129,12 @@ class Session:
 
     async def dispatch_turn(self, raw: str, *, reason: str) -> None:
         """The person's turn is finished: queue it for rebuild and the bot."""
+        if self.gate.pending:
+            answer = spoken_answer(raw)
+            self.gate.answer(None, answer or "change", by="voice" if answer else "new_turn")
+            if answer:
+                await self.emit({"type": "sending", "n": self.turn_count, "t": self.now})
+                return
         self.turn_count += 1
         item = {"n": self.turn_count, "raw": raw, "reason": reason,
                 "speech_end_t": self.last_speech_end, "sent_t": self.now}
@@ -150,6 +161,11 @@ class Session:
             self.log.write("turns", turn)
             await self.emit(turn)
             text = turn["clean"]
+            if turn["needs_confirm"]:
+                answer = await self.gate.ask(f'Did you mean: "{text}"?', "rebuild",
+                                             {"raw": turn["raw"], "guard_fails": turn["guard_fails"]})
+                if answer != "yes":
+                    text = turn["raw"]  # the person's own words
             t0 = time.monotonic()
             try:
                 out = await self.bot.respond(text)
@@ -163,6 +179,9 @@ class Session:
 
     async def command(self, cmd: dict) -> None:
         self.log.write("events", {"dir": "cmd", **cmd})
+        if cmd.get("type") == "confirm_answer":
+            self.gate.answer(cmd.get("action_id"), cmd.get("answer", ""))
+            return
         if cmd.get("type") == "text" and cmd.get("text", "").strip():
             if self.mode == "unhurried":
                 await self.act(self.engine.typed(cmd["text"]))
@@ -174,6 +193,7 @@ class Session:
             return
         self._stopped = True
         self.engine.close()
+        self.gate.cancel_all()
         await self.stream.close()
         await self.turns.put(None)
         for t in self._tasks:
@@ -185,5 +205,5 @@ class Session:
         if pauses and not self.bench and not self.config.get("max_wait_ms"):
             self.profile.add(pauses)
             self.profile.save()
-        await self.emit({"type": "stopped", "turns": self.turn_count,
+        await self.emit({"type": "stopped", "turns": self.turn_count, "confirms": self.gate.count,
                          "inner_pauses_ms": pauses})
