@@ -90,10 +90,12 @@ async def save_clip(audio: UploadFile = File(...), meta: str = Form(...)):
 
 @router.get("/bench/clips")
 async def list_clips():
-    p = BENCH / "clips.jsonl"
-    if not p.exists():
-        return []
-    return [json.loads(x) for x in p.read_text(encoding="utf-8").splitlines() if x.strip()]
+    out = []
+    for name in ("clips.jsonl", "clips_synthetic.jsonl"):
+        p = BENCH / name
+        if p.exists():
+            out += [json.loads(x) for x in p.read_text(encoding="utf-8").splitlines() if x.strip()]
+    return out
 
 
 @router.get("/bench/audio/{name}")

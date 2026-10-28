@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unhurried Demo</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    main { max-width: 1200px; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+    .side h2 { display: flex; justify-content: space-between; align-items: baseline; }
+    .tag { font-size: .8rem; padding: 2px 10px; border-radius: 999px; background: var(--bg); color: var(--muted); }
+    .side.unhurried .tag { background: var(--accent-soft); color: var(--accent); }
+    .captions { min-height: 4.5em; }
+    .chat { min-height: 220px; }
+    .stat { font-size: .9rem; color: var(--muted); min-height: 1.4em; }
+    .stat .cutoff { color: var(--warn); font-weight: 600; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Same voice, two voice bots</h1>
+  <p class="sub">Left: a normal voice bot. Right: the same bot behind Unhurried.</p>
+
+  <section class="card">
+    <div class="row">
+      <button id="mic" class="primary">Use microphone</button>
+      <select id="clip" aria-label="Clip"><option value="">Play a clip…</option></select>
+      <button id="play">Play clip</button>
+      <button id="stop" disabled>Stop</button>
+      <label><input id="speak" type="checkbox" checked> Speak Unhurried replies</label>
+      <span id="status" class="status"></span>
+    </div>
+  </section>
+
+  <div class="split">
+    <section class="card side baseline" id="side-baseline">
+      <h2>Normal voice bot <span class="tag">baseline</span></h2>
+      <div class="captions"><span class="committed"></span> <span class="live"></span></div>
+      <div class="stat"></div>
+      <div class="chat"></div>
+    </section>
+    <section class="card side unhurried" id="side-unhurried">
+      <h2>With Unhurried <span class="tag">unhurried</span></h2>
+      <div class="captions"><span class="committed"></span> <span class="live"></span></div>
+      <div class="cue" role="status"><span class="dot"></span>Take your time</div>
+      <div class="card confirm" style="margin-top:10px">
+        <p class="confirm-text"></p>
+        <div class="row"><button class="yes primary">Yes</button><button class="change">Change</button></div>
+      </div>
+      <div class="stat"></div>
+      <div class="chat"></div>
+    </section>
+  </div>
+</main>
+<script type="module" src="demo.js"></script>
+</body>
+</html>
