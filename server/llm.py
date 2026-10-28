@@ -207,3 +207,29 @@ class TranscribeStream:
                  audio_s=round(self.audio_seconds, 2), session=self.session_id,
                  keywords=len(self.keywords))
         self._ws = None
+
+
+async def transcribe_file(wav: bytes, *, keywords: list[str] | None = None,
+                          mode: str = "ENDPOINTING", purpose: str = "studio") -> dict:
+    """One-shot Voice Transcribe for a mono 16-bit 16/24 kHz WAV.
+    Returns {"transcript", "turns": [{startMs, endMs, transcript}], "audioDurationMs"}."""
+    request = {"mode": mode, "model": TRANSCRIBE_MODEL, "audioEncoding": "WAV"}
+    kw = [k for k in (keywords or []) if k][:100]
+    if kw:
+        request["keywords"] = kw
+    files = {"request": (None, json.dumps(request), "application/json"),
+             "audio": ("audio.wav", wav, "audio/wav")}
+    start = time.monotonic()
+    try:
+        resp = await _http().post(base_url() + "/asr/transcribe", files=files,
+                                  headers={"Authorization": f"Bearer {api_key()}"}, timeout=120)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as exc:
+        log_call("transcribe_file", TRANSCRIBE_MODEL, (time.monotonic() - start) * 1000, 0.0,
+                 purpose=purpose, error=type(exc).__name__)
+        raise
+    seconds = (data.get("audioDurationMs") or 0) / 1000
+    log_call("transcribe_file", TRANSCRIBE_MODEL, (time.monotonic() - start) * 1000,
+             transcribe_cost(seconds), purpose=purpose, audio_s=round(seconds, 2))
+    return data

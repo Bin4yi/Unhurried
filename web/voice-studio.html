@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unhurried Voice Studio</title>
+  <meta name="description" content="Record yourself. Unhurried removes repeats, fillers and long blocks from your own voice.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="voice-studio.css">
+</head>
+<body>
+<header class="top">
+  <h1 class="mark">unhurried<span>.</span></h1>
+  <span class="tag">Voice Studio</span>
+  <div class="spacer"></div>
+  <nav class="nav" aria-label="Pages">
+    <a href="studio.html">Live</a>
+    <a href="voice-studio.html" aria-current="page">Voice Studio</a>
+  </nav>
+</header>
+
+<main class="vs">
+  <section>
+    <p class="lead">Say it your way. <em>Keep every word you meant.</em></p>
+    <p class="sub">Record a voice note, a talk or a narration. Voice Studio finds repeated sounds, fillers,
+      self-corrections and long blocks, and cuts them out of <strong>your own recording</strong>. Nothing is added.
+      You check every cut.</p>
+  </section>
+
+  <section class="card step" aria-labelledby="s1">
+    <div class="step-head"><span class="step-n">1</span><h2 id="s1">Record</h2></div>
+    <div class="rec-row">
+      <button class="rec" id="rec" aria-label="Start recording">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      </button>
+      <div>
+        <div class="rec-hint" id="rec-hint">Press to record. Take all the time you need. Up to 3 minutes.</div>
+        <div class="row" style="margin-top:8px">
+          <label class="btn" style="margin:0">Or upload audio<input id="upload" type="file" accept="audio/*" class="sr-only"></label>
+          <label class="muted"><input id="use-spark" type="checkbox" checked> Find self-corrections with Muse Spark</label>
+        </div>
+      </div>
+    </div>
+    <canvas class="wave" id="live-wave" width="1200" height="110" style="margin-top:18px" aria-hidden="true"></canvas>
+    <ol class="progress" id="progress" hidden>
+      <li data-k="up"><i></i>Sending your recording</li>
+      <li data-k="tr"><i></i>Transcribing with Muse Voice Transcribe</li>
+      <li data-k="al"><i></i>Finding when each word starts with Meta wav2vec 2.0</li>
+      <li data-k="ed"><i></i>Finding repeats, fillers and corrections</li>
+    </ol>
+    <p class="err" id="err" role="alert"></p>
+  </section>
+
+  <section class="card step" id="review" hidden aria-labelledby="s2">
+    <div class="step-head"><span class="step-n">2</span><h2 id="s2">Check every cut</h2>
+      <div class="spacer"></div><span class="muted" id="summary"></span></div>
+    <canvas class="wave" id="wave" width="1200" height="110" aria-label="Recording with cuts shaded. Click to play from a point."></canvas>
+    <div class="editor">
+      <div>
+        <p class="muted" style="margin:14px 0 0">Tap a crossed-out part to keep it.</p>
+        <div class="words" id="words"></div>
+        <div class="clean"><span class="eyebrow">Clean text</span><p id="clean-text"></p>
+          <button class="said-btn" id="copy">Copy text</button></div>
+      </div>
+      <div>
+        <h3 class="eyebrow" style="margin-top:16px">Cuts</h3>
+        <ul class="edits" id="edits"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="outputs" id="outputs" hidden>
+    <div class="card step" aria-labelledby="s3">
+      <div class="step-head"><span class="step-n">3</span><h2 id="s3">Your voice, unhurried</h2></div>
+      <span class="badge">Real voice · only cuts</span>
+      <div class="player"><label>Before</label><audio id="a-orig" controls preload="none"></audio></div>
+      <div class="player"><label>After</label><audio id="a-clean" controls preload="none"></audio></div>
+      <div class="row">
+        <button class="btn solid" id="render">Make the clean version</button>
+        <a class="btn" id="dl-clean" hidden download>Download</a>
+      </div>
+      <p class="muted" id="render-note"></p>
+    </div>
+
+    <div class="card step" aria-labelledby="s4">
+      <div class="step-head"><span class="step-n">4</span><h2 id="s4">AI voice <span class="muted">(optional)</span></h2></div>
+      <span class="badge ai">AI-generated · watermarked</span>
+      <p class="sub" style="margin-top:12px">A clone of your voice reads your clean words. Smoother, but it is generated audio.</p>
+      <ul class="rules">
+        <li>Only your own voice: record live here, then read one sentence aloud.</li>
+        <li>Only your own words: it reads the clean text above, nothing else.</li>
+        <li>Every file carries an inaudible AI watermark and is labelled AI voice.</li>
+        <li>Tell your listeners when you use it.</li>
+      </ul>
+      <div id="clone-off" class="muted" hidden>Voice clone is not installed on this machine.</div>
+      <div id="clone-on">
+        <button class="btn" id="get-sentence">I want an AI-voice version</button>
+        <div id="verify-box" hidden>
+          <p class="muted">Read this aloud, then stop:</p>
+          <p class="say" id="sentence"></p>
+          <div class="row"><button class="btn solid" id="verify-rec">Record sentence</button><span id="verify-msg" class="muted" role="status"></span></div>
+        </div>
+        <div id="make-box" hidden>
+          <button class="btn solid" id="make-clone">Make AI-voice version</button>
+          <p class="muted" id="clone-msg" role="status"></p>
+          <div class="player" id="clone-player" hidden><label>AI voice</label><audio id="a-clone" controls preload="none"></audio>
+            <a class="btn" id="dl-clone" download>Download (AI voice)</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="row" id="danger" hidden>
+    <button class="btn" id="delete">Delete this recording</button>
+    <span class="muted">Your recording is kept on this computer until you delete it.</span>
+  </section>
+</main>
+<footer class="foot">Built on Meta Muse Voice Transcribe, Muse Spark and wav2vec 2.0. AI voice by Chatterbox (MIT).</footer>
+<script type="module" src="voice-studio.js"></script>
+</body>
+</html>

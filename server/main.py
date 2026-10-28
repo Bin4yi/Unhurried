@@ -11,12 +11,28 @@ from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconn
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from server import bench_api, learner, passport_store
+from server import bench_api, learner, passport_store, studio_api
 from server.session import Session
 
 ROOT = Path(__file__).resolve().parent.parent
 app = FastAPI(title="Unhurried")
 app.include_router(bench_api.router)
+app.include_router(studio_api.router)
+
+
+@app.on_event("startup")
+async def warm_models():
+    """Load the alignment model in the background so the first Voice Studio run is fast."""
+    import threading
+    from server.studio import align
+    threading.Thread(target=lambda: _safe(align._model), daemon=True).start()
+
+
+def _safe(fn):
+    try:
+        fn()
+    except Exception:
+        pass
 
 
 @app.get("/")
