@@ -10,11 +10,12 @@ from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconn
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from server import passport_store
+from server import bench_api, passport_store
 from server.session import Session
 
 ROOT = Path(__file__).resolve().parent.parent
 app = FastAPI(title="Unhurried")
+app.include_router(bench_api.router)
 
 
 @app.get("/")

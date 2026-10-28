@@ -1,0 +1,13 @@
+# One line per clip. Short booking-style requests.
+Book a table for two at seven on Friday.
+I want to book a table for four people at eight tomorrow.
+Can I book a table for three at half past six on Saturday?
+Book a table for two, no, three people at seven on Sunday.
+I would like a table for five at noon on Monday.
+Please book a table for two tonight at nine.
+Cancel my booking.
+What are my bookings?
+Book a table for six at seven thirty on Thursday.
+Can you book a table for one at one pm on Wednesday?
+Book a table for four at eight, sorry, at nine on Friday.
+I need a table for two people tomorrow at seven pm.

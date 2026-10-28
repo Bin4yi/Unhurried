@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Record Clips</title>
+  <link rel="stylesheet" href="/web/style.css">
+  <style>
+    canvas { width: 100%; height: 120px; border-radius: 10px; background: var(--bg); cursor: crosshair; display: block; }
+    fieldset { border: 1px solid var(--line); border-radius: 10px; margin: 0 0 12px; }
+    label { margin-right: 12px; }
+    .script { font-size: 1.3rem; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Record benchmark clips</h1>
+  <p class="sub">Read the line, then click on the waveform where your speech really ended.</p>
+
+  <section class="card">
+    <p class="muted">Line <span id="line-n">1</span> of <span id="line-total">0</span></p>
+    <p id="script" class="script"></p>
+    <div class="row">
+      <button id="prev">Previous line</button>
+      <button id="next">Next line</button>
+      <button id="rec" class="primary">Record</button>
+      <button id="stop" disabled>Stop</button>
+      <button id="play" disabled>Play</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <canvas id="wave" width="1200" height="240" aria-label="Waveform. Click to mark the end of speech."></canvas>
+    <p class="muted">Speech ends at: <strong id="end">not set</strong></p>
+  </section>
+
+  <section class="card">
+    <fieldset><legend>Kind</legend>
+      <label><input type="radio" name="kind" value="stammer" checked> stammer</label>
+      <label><input type="radio" name="kind" value="fluent"> fluent</label>
+    </fieldset>
+    <fieldset><legend>Features</legend>
+      <label><input type="checkbox" name="feat" value="silent_block"> silent block</label>
+      <label><input type="checkbox" name="feat" value="repeat_sound"> repeated sound</label>
+      <label><input type="checkbox" name="feat" value="repeat_word"> repeated word</label>
+      <label><input type="checkbox" name="feat" value="stretched_sound"> stretched sound</label>
+      <label><input type="checkbox" name="feat" value="word_switch"> word switch</label>
+      <label><input type="checkbox" name="feat" value="filler"> filler</label>
+    </fieldset>
+    <fieldset><legend>Expected bot action</legend>
+      <div class="row">
+        <select id="tool"><option>book_table</option><option>cancel_booking</option><option>list_bookings</option><option value="">none</option></select>
+        <input id="people" type="text" placeholder="people (2)" size="6">
+        <input id="time" type="text" placeholder="time (19:00)" size="8">
+        <input id="day" type="text" placeholder="day (Friday)" size="10">
+      </div>
+    </fieldset>
+    <fieldset><legend>Consent</legend>
+      <label><input type="radio" name="consent" value="self" checked> my own voice</label>
+      <label><input type="radio" name="consent" value="volunteer"> volunteer (written consent)</label>
+      <label><input type="checkbox" id="public"> audio may be public (own voice only)</label>
+    </fieldset>
+    <div class="row">
+      <button id="save" class="primary" disabled>Save clip</button>
+      <span id="msg" class="status" role="status"></span>
+    </div>
+  </section>
+</main>
+<script type="module">
+import { RATE, startMic } from "/web/mic.js";
+const $ = (id) => document.getElementById(id);
+let lines = [], idx = 0, chunks = [], stopMic = null, samples = null, endS = null;
+
+function showLine() {
+  $("script").textContent = lines[idx] || "(add lines to bench/scripts.txt)";
+  $("line-n").textContent = idx + 1;
+  $("line-total").textContent = lines.length;
+}
+
+function draw() {
+  const c = $("wave"), g = c.getContext("2d");
+  g.clearRect(0, 0, c.width, c.height);
+  if (!samples) return;
+  const css = getComputedStyle(document.body);
+  g.fillStyle = css.getPropertyValue("--accent");
+  const step = Math.max(1, Math.floor(samples.length / c.width));
+  for (let x = 0; x < c.width; x++) {
+    let peak = 0;
+    for (let i = x * step; i < (x + 1) * step && i < samples.length; i++) peak = Math.max(peak, Math.abs(samples[i]));
+    const h = (peak / 32768) * c.height;
+    g.fillRect(x, (c.height - h) / 2, 1, Math.max(1, h));
+  }
+  if (endS != null) {
+    g.fillStyle = css.getPropertyValue("--warn");
+    g.fillRect((endS * RATE / samples.length) * c.width, 0, 3, c.height);
+  }
+}
+
+function wavBytes(int16) {
+  const buf = new ArrayBuffer(44 + int16.length * 2), v = new DataView(buf);
+  const str = (o, s) => [...s].forEach((ch, i) => v.setUint8(o + i, ch.charCodeAt(0)));
+  str(0, "RIFF"); v.setUint32(4, 36 + int16.length * 2, true); str(8, "WAVE"); str(12, "fmt ");
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, RATE, true); v.setUint32(28, RATE * 2, true); v.setUint16(32, 2, true);
+  v.setUint16(34, 16, true); str(36, "data"); v.setUint32(40, int16.length * 2, true);
+  new Int16Array(buf, 44).set(int16);
+  return buf;
+}
+
+$("rec").onclick = async () => {
+  chunks = []; samples = null; endS = null; $("end").textContent = "not set"; draw();
+  stopMic = await startMic((c) => chunks.push(new Int16Array(c)));
+  $("rec").disabled = true; $("stop").disabled = false; $("save").disabled = true;
+};
+$("stop").onclick = () => {
+  stopMic(); stopMic = null;
+  samples = new Int16Array(chunks.reduce((n, c) => n + c.length, 0));
+  let o = 0; for (const c of chunks) { samples.set(c, o); o += c.length; }
+  $("rec").disabled = false; $("stop").disabled = true; $("play").disabled = false;
+  draw();
+};
+$("play").onclick = () => {
+  const url = URL.createObjectURL(new Blob([wavBytes(samples)], { type: "audio/wav" }));
+  new Audio(url).play();
+};
+$("wave").onclick = (e) => {
+  if (!samples) return;
+  const r = e.target.getBoundingClientRect();
+  endS = ((e.clientX - r.left) / r.width) * samples.length / RATE;
+  $("end").textContent = endS.toFixed(2) + " s";
+  $("save").disabled = false;
+  draw();
+};
+$("prev").onclick = () => { idx = Math.max(0, idx - 1); showLine(); };
+$("next").onclick = () => { idx = Math.min(lines.length - 1, idx + 1); showLine(); };
+$("save").onclick = async () => {
+  const tool = $("tool").value, args = {};
+  if ($("people").value) args.people = Number($("people").value);
+  if ($("time").value) args.time = $("time").value;
+  if ($("day").value) args.day = $("day").value;
+  const meta = {
+    kind: document.querySelector("input[name=kind]:checked").value,
+    features: [...document.querySelectorAll("input[name=feat]:checked")].map((x) => x.value),
+    speech_end_s: endS, expected: tool ? { tool, args } : {},
+    consent: document.querySelector("input[name=consent]:checked").value,
+    public_audio: $("public").checked, script: lines[idx] || "",
+  };
+  const fd = new FormData();
+  fd.append("audio", new Blob([wavBytes(samples)], { type: "audio/wav" }), "clip.wav");
+  fd.append("meta", JSON.stringify(meta));
+  const r = await fetch("/bench/clip", { method: "POST", body: fd });
+  const out = await r.json();
+  $("msg").textContent = r.ok ? `Saved ${out.id} (${out.public_audio ? "public" : "private"})` : `Error: ${out.detail}`;
+  if (r.ok) { $("save").disabled = true; idx = Math.min(lines.length - 1, idx + 1); showLine(); }
+};
+
+lines = await (await fetch("/bench/scripts")).json();
+showLine();
+</script>
+</body>
+</html>
