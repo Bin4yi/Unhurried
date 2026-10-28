@@ -82,3 +82,15 @@ def test_no_answer_holds():
     out, c = run(go())
     assert out[0]["do"] == "hold" and out[0]["reason"] == "check_no"
     assert c.decisions[-1]["spark_check"]["answer"] == "no"
+
+
+def test_pause_anchor_prefers_own_voice_check_when_close():
+    async def noop(acts):
+        pass
+    voice = {"t": 3.6}
+    e = Engine(TurnController(), lambda: 4.5, noop, last_voice=lambda: voice["t"])
+    assert e.pause_anchor(2.4, 4.5) == 3.6        # service reported the end 1.2 s early
+    voice["t"] = 0.5
+    assert e.pause_anchor(2.4, 4.5) == 2.4        # too far apart: keep the service's time
+    voice["t"] = None
+    assert e.pause_anchor(2.4, 4.5) == 2.4

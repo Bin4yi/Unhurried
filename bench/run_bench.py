@@ -32,7 +32,7 @@ CONFIGS = {
     "sound": {"mode": "unhurried", "engine": {"spark_check": False, "sound": True}},
     "sound_spark": {"mode": "unhurried", "engine": {"spark_check": True, "sound": True}},
 }
-TAIL_S = 8.0          # silence after the clip (longer than the 6 s max wait)
+TAIL_S = 10.0         # silence after the clip (longer than 6 s max wait + speech lag)
 SETTLE_S = 25.0       # max wait for the bot to finish after the audio
 
 

@@ -12,6 +12,7 @@ from server.turn_controller import TurnController, check_key, classify
 
 OnActions = Callable[[list[dict]], Awaitable[None]]
 MAX_IN_FLIGHT = 3
+ANCHOR_WINDOW_S = 1.5
 
 
 class Engine:
@@ -37,7 +38,7 @@ class Engine:
         elif kind == "speech_start":
             acts = c.on_speech_start(now, ev.get("start_t"))
         elif kind == "speech_end":
-            acts = c.on_pause(ev["end_t"], now)
+            acts = c.on_pause(self.pause_anchor(ev["end_t"], now), now)
         elif kind == "model_turn":
             snd = None
             if c.use_sound:
@@ -47,6 +48,14 @@ class Engine:
         else:
             return []
         return self._launch(acts)
+
+    def pause_anchor(self, end_t: float, now: float) -> float:
+        """When the pause really started. The speech service's reported end can be up to
+        about 1 s early or late; our own level check has no lag, so prefer it when close."""
+        lv = self.last_voice()
+        if lv is not None and abs(lv - end_t) <= ANCHOR_WINDOW_S and lv <= now:
+            return lv
+        return end_t
 
     def tick(self) -> list[dict]:
         return self._launch(self.c.tick(self.now(), self.last_voice()))
