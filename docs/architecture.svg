@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="14">
+  <style>
+    .box { fill: #ffffff; stroke: #c9c4b8; stroke-width: 1.5; rx: 12; }
+    .core { fill: #e3efec; stroke: #2f6f62; }
+    .meta { fill: #eef0fb; stroke: #4b5bb5; }
+    .t { fill: #1f2328; }
+    .s { fill: #6b6f76; font-size: 12px; }
+    .a { stroke: #6b6f76; stroke-width: 1.6; fill: none; marker-end: url(#m); }
+    .bg { fill: #f6f4ef; }
+  </style>
+  <defs><marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b6f76"/></marker></defs>
+  <rect class="bg" width="960" height="420"/>
+
+  <rect class="box" x="20" y="150" width="150" height="110"/>
+  <text class="t" x="95" y="185" text-anchor="middle" font-weight="600">Browser</text>
+  <text class="s" x="95" y="207" text-anchor="middle">mic 24 kHz, captions</text>
+  <text class="s" x="95" y="225" text-anchor="middle">"take your time", confirm</text>
+  <text class="s" x="95" y="243" text-anchor="middle">Voice Passport (encrypted)</text>
+
+  <rect class="box core" x="230" y="40" width="470" height="340"/>
+  <text class="t" x="465" y="66" text-anchor="middle" font-weight="600">Unhurried server</text>
+
+  <rect class="box" x="250" y="85" width="140" height="60"/>
+  <text class="t" x="320" y="112" text-anchor="middle">Audio router</text>
+  <text class="s" x="320" y="131" text-anchor="middle">+ zero-lag voice check</text>
+
+  <rect class="box" x="420" y="85" width="260" height="120"/>
+  <text class="t" x="550" y="110" text-anchor="middle">Turn engine (hold or send?)</text>
+  <text class="s" x="550" y="132" text-anchor="middle">1 words: code rules</text>
+  <text class="s" x="550" y="150" text-anchor="middle">2 sound: pitch, fade, voicing in pause</text>
+  <text class="s" x="550" y="168" text-anchor="middle">3 Spark completeness check (tie-break)</text>
+  <text class="s" x="550" y="186" text-anchor="middle">personal max wait</text>
+
+  <rect class="box" x="250" y="230" width="200" height="60"/>
+  <text class="t" x="350" y="256" text-anchor="middle">Meaning rebuild</text>
+  <text class="s" x="350" y="275" text-anchor="middle">code pass, Spark pass, guard</text>
+
+  <rect class="box" x="480" y="230" width="200" height="60"/>
+  <text class="t" x="580" y="256" text-anchor="middle">Confirm gate</text>
+  <text class="s" x="580" y="275" text-anchor="middle">book, cancel, unsure rebuilds</text>
+
+  <rect class="box" x="250" y="310" width="430" height="50"/>
+  <text class="t" x="465" y="340" text-anchor="middle">Decision log, benchmark runner, results</text>
+
+  <rect class="box meta" x="760" y="60" width="180" height="70"/>
+  <text class="t" x="850" y="90" text-anchor="middle">Muse Voice Transcribe</text>
+  <text class="s" x="850" y="110" text-anchor="middle">live text, end of speech, keywords</text>
+
+  <rect class="box meta" x="760" y="160" width="180" height="70"/>
+  <text class="t" x="850" y="190" text-anchor="middle">Muse Spark</text>
+  <text class="s" x="850" y="210" text-anchor="middle">check, rebuild, bot brain</text>
+
+  <rect class="box" x="760" y="270" width="180" height="70"/>
+  <text class="t" x="850" y="300" text-anchor="middle">Any voice bot</text>
+  <text class="s" x="850" y="320" text-anchor="middle">demo: booking assistant</text>
+
+  <path class="a" d="M170 190 C 210 190, 215 115, 250 115"/>
+  <path class="a" d="M390 105 C 560 30, 700 70, 760 90"/>
+  <path class="a" d="M760 110 C 700 140, 690 140, 680 140"/>
+  <path class="a" d="M390 120 L 420 130"/>
+  <path class="a" d="M500 205 L 400 230"/>
+  <path class="a" d="M450 260 L 480 260"/>
+  <path class="a" d="M680 180 L 760 190"/>
+  <path class="a" d="M680 270 C 720 270, 730 300, 760 300"/>
+  <path class="a" d="M760 320 C 500 410, 200 400, 120 260"/>
+</svg>
