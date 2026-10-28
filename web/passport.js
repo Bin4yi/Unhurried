@@ -1,10 +1,10 @@
 // Voice Passport UI: unlock, save (IndexedDB + server, encrypted), export, import, delete.
 import {
-  addPauses, decryptProfile, encryptProfile, learnWords, newProfile, sessionSettings,
+  addPauses, applyProposal, decryptProfile, encryptProfile, learnWords, newProfile, sessionSettings,
 } from "./passport-crypto.js";
 
 const $ = (id) => document.getElementById(id);
-let profile = null, passphrase = "", learnNext = false;
+let profile = null, passphrase = "", learnNext = false, sessionId = null;
 
 // ---- storage ---------------------------------------------------------------
 function profileId() {
@@ -126,10 +126,38 @@ window.unhurriedSessionExtras = () => {
 
 window.addEventListener("unhurried-event", async ({ detail: ev }) => {
   if (!profile) return;
+  if (ev.type === "ready") sessionId = ev.session_id;
+  if (ev.type === "stopped" && sessionId) suggest(sessionId);
   if (ev.type === "confirm_done" && ev.answer === "change") learnNext = true;
   else if (ev.type === "turn" && learnNext) { learnNext = false; learnWords(profile, ev.clean); await persist(); }
   else if (ev.type === "stopped" && ev.inner_pauses_ms?.length) { addPauses(profile, ev.inner_pauses_ms); await persist(); }
 });
+
+// ---- learner agent suggestions (you approve each one) ----------------------
+async function suggest(sid) {
+  const box = $("suggestions");
+  const r = await fetch(`/learn/${sid}`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ max_wait_ms: sessionSettings(profile).max_wait_ms }),
+  }).then((x) => x.json()).catch(() => ({ proposals: [] }));
+  const list = box.querySelector(".list");
+  list.innerHTML = "";
+  for (const p of r.proposals || []) {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.style.marginBottom = "8px";
+    const text = document.createElement("span");
+    text.textContent = p.text;
+    text.style.flex = "1";
+    const yes = document.createElement("button"), no = document.createElement("button");
+    yes.textContent = "Approve"; yes.className = "primary"; no.textContent = "Reject";
+    yes.onclick = async () => { applyProposal(profile, p); await persist(); row.remove(); };
+    no.onclick = () => row.remove();
+    row.append(text, yes, no);
+    list.appendChild(row);
+  }
+  box.hidden = !(r.proposals || []).length;
+}
 
 $("pp-unlock").onclick = unlock;
 $("pp-lock").onclick = lock;

@@ -57,7 +57,7 @@ export function maxWait(pauses) {
 
 export function addPauses(profile, pauses) {
   const all = [...profile.timing.inner_pauses_ms, ...pauses.filter((p) => p > 0)].slice(-200);
-  profile.timing = { inner_pauses_ms: all, max_wait_ms: maxWait(all) };
+  profile.timing = { ...profile.timing, inner_pauses_ms: all, max_wait_ms: maxWait(all) };
   profile.updated = new Date().toISOString();
   return profile;
 }
@@ -76,11 +76,22 @@ export function learnWords(profile, text) {
   return profile;
 }
 
+// Apply one learner proposal the person approved.
+export function applyProposal(profile, p) {
+  const a = p.args;
+  if (p.tool === "adjust_max_wait") profile.timing.manual_ms = Math.max(2000, Math.min(6000, a.new_ms));
+  else if (p.tool === "add_listen_word" && !profile.words.added_by_me.includes(a.word)) profile.words.added_by_me.push(a.word);
+  else if (p.tool === "add_switch") profile.switches.push({ said: a.said, means: a.means, approved: true });
+  else if (p.tool === "set_pref" && a.name in profile.prefs) profile.prefs[a.name] = a.value;
+  profile.updated = new Date().toISOString();
+  return profile;
+}
+
 // What a session needs from the profile. Nothing else leaves the browser.
 export function sessionSettings(profile) {
   const learned = profile.words.learned.filter((w) => w.seen >= 2).map((w) => w.word);
   return {
-    max_wait_ms: profile.timing.max_wait_ms,
+    max_wait_ms: profile.timing.manual_ms || profile.timing.max_wait_ms,
     keywords: [...new Set([...profile.words.added_by_me, ...learned])].slice(0, 80),
     switches: profile.switches.filter((s) => s.approved),
     prefs: profile.prefs,

@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from server import bench_api, passport_store
+from server import bench_api, learner, passport_store
 from server.session import Session
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -50,6 +51,19 @@ async def delete_profile(pid: str):
         return {"deleted": passport_store.delete(pid)}
     except passport_store.PassportError as exc:
         raise HTTPException(400, str(exc))
+
+
+@app.post("/learn/{session_id}")
+async def learn(session_id: str, request: Request):
+    """Learner agent: proposals for the Voice Passport. Nothing is changed here."""
+    if not re.fullmatch(r"[A-Za-z0-9_]{3,80}", session_id):
+        raise HTTPException(400, "bad session id")
+    body = await request.json()
+    current = int(body.get("max_wait_ms") or 6000)
+    try:
+        return {"proposals": await learner.propose(session_id, current)}
+    except Exception as exc:
+        return {"proposals": [], "error": type(exc).__name__}
 
 
 @app.websocket("/listen")

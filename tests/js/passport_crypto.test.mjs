@@ -36,3 +36,15 @@ assert.deepEqual(Object.keys(s).sort(), ["keywords", "max_wait_ms", "prefs", "sw
 assert.ok(s.keywords.includes("weligama") && !s.keywords.includes("branch"));
 assert.equal(s.switches.length, 1);
 console.log("passport crypto tests passed");
+
+import { applyProposal } from "../../web/passport-crypto.js";
+const q = newProfile();
+applyProposal(q, { tool: "adjust_max_wait", args: { new_ms: 9000 } });
+assert.equal(sessionSettings(q).max_wait_ms, 6000);
+applyProposal(q, { tool: "add_listen_word", args: { word: "Binula" } });
+applyProposal(q, { tool: "set_pref", args: { name: "show_cue", value: false } });
+assert.deepEqual(q.words.added_by_me, ["Binula"]);
+assert.equal(q.prefs.show_cue, false);
+addPauses(q, [3000]);
+assert.equal(sessionSettings(q).max_wait_ms, 6000, "manual setting survives new pauses");
+console.log("learner apply tests passed");
