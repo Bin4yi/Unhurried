@@ -124,3 +124,19 @@ def test_typed_text_merges_with_live_partial():
     c = TurnController()
     c.on_partial("Book a table", 1.0)
     assert c.on_typed("for Matara branch", 2.0)[0]["text"] == "Book a table for Matara branch"
+
+
+def test_own_voice_check_blocks_send_while_model_has_not_caught_up():
+    c = TurnController()
+    c.on_pause(1.0, 1.7)
+    c.on_model_turn("Book a table for two", 1.7)      # send due at 2.0
+    assert c.tick(2.1, last_voice_t=2.0) == []          # voice heard again at 2.0
+    assert c.tick(2.6, last_voice_t=2.0)[0]["reason"] == "rules"  # quiet again: no new speech came
+
+
+def test_max_wait_counts_from_last_voice():
+    c = TurnController(max_wait_ms=3000)
+    c.on_pause(1.0, 1.7)
+    c.on_model_turn("I want to", 1.7)
+    assert c.tick(4.5, last_voice_t=2.5) == []          # 2.0 s since voice
+    assert c.tick(5.5, last_voice_t=2.5)[0]["reason"] == "max_wait"

@@ -49,3 +49,16 @@ def test_pump_emits_until_closed():
     r, out = make_router(script)
     run(r.pump())
     assert [e["type"] for e in out] == ["speech_start", "partial"]
+
+
+def test_voice_check_tracks_loud_audio_only():
+    r, _ = make_router()
+    quiet = (np.random.default_rng(0).normal(0, 30, 1920)).astype("<i2").tobytes()
+    loud = (np.sin(np.arange(1920) / 5) * 8000).astype("<i2").tobytes()
+    for _ in range(20):
+        run(r.feed(quiet))
+    assert r.last_voice_t is None
+    run(r.feed(loud))
+    assert abs(r.last_voice_t - 21 * 0.08) < 1e-6
+    run(r.feed(quiet))
+    assert abs(r.last_voice_t - 21 * 0.08) < 1e-6

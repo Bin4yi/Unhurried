@@ -20,6 +20,8 @@ from typing import Awaitable, Callable
 import numpy as np
 
 Emit = Callable[[dict], Awaitable[None]]
+VOICE_MIN_RMS = 0.01      # about -40 dBFS
+VOICE_OVER_FLOOR = 4.0    # voice must be this many times above the noise floor
 
 
 class AudioRouter:
@@ -31,6 +33,8 @@ class AudioRouter:
         self._recent: deque[np.ndarray] = deque()
         self._recent_samples = 0
         self._keep = int(keep_seconds * rate)
+        self.noise_floor = 0.003
+        self.last_voice_t: float | None = None
 
     async def feed(self, pcm: bytes) -> None:
         """Forward one chunk of 16-bit mono PCM and advance the audio clock."""
@@ -43,6 +47,19 @@ class AudioRouter:
         self._recent_samples += len(samples)
         while self._recent and self._recent_samples - len(self._recent[0]) >= self._keep:
             self._recent_samples -= len(self._recent.popleft())
+        self._update_voice(samples)
+
+    def _update_voice(self, samples: np.ndarray) -> None:
+        """Simple level-based voice check with an adaptive noise floor (no model lag)."""
+        if not len(samples):
+            return
+        rms = float(np.sqrt(np.mean((samples.astype(np.float32) / 32768.0) ** 2)))
+        if rms < self.noise_floor:
+            self.noise_floor = 0.7 * self.noise_floor + 0.3 * rms
+        else:
+            self.noise_floor = min(0.05, self.noise_floor * 1.002 + 1e-6)
+        if rms > max(VOICE_MIN_RMS, self.noise_floor * VOICE_OVER_FLOOR):
+            self.last_voice_t = self.audio_t
 
     def recent_audio(self, seconds: float) -> np.ndarray:
         """Last `seconds` of audio as float32 in [-1, 1]."""

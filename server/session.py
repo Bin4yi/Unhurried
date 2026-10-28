@@ -59,7 +59,9 @@ class Session:
 
         # Personal timing: a max wait sent by the browser (Voice Passport) wins,
         # otherwise the server-side pause profile for this user id.
-        self.profile = TimingProfile.load(str(start.get("user_id") or "u1"))
+        # Benchmark runs never use a learned profile, so results are repeatable.
+        uid = str(start.get("user_id") or "u1")
+        self.profile = TimingProfile(user_id=uid) if self.bench else TimingProfile.load(uid)
         max_wait = int(start.get("max_wait_ms") or self.profile.max_wait_ms)
         engine_cfg = {"spark_check": True, "rebuild_spark": True, **(start.get("engine") or {})}
         self.engine_cfg = engine_cfg
@@ -69,7 +71,8 @@ class Session:
             check_timeout_ms=int(engine_cfg.get("check_timeout_ms", 700)))
         kw = {"checker": checker} if checker else {}
         self.engine = Engine(self.controller, lambda: self.now, self.act,
-                             provider=engine_cfg.get("provider", "spark"), **kw)
+                             provider=engine_cfg.get("provider", "spark"),
+                             last_voice=lambda: self.router.last_voice_t, **kw)
         self._logged_decisions = 0
 
     @property

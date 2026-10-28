@@ -132,16 +132,24 @@ class TurnController:
         self.partial = ""
         return self._send(now, "typed")
 
-    def tick(self, now: float) -> list[dict]:
+    def tick(self, now: float, last_voice_t: float | None = None) -> list[dict]:
+        """last_voice_t: when our own audio level check last heard a voice (no model lag).
+        Voice after the pause started means the person is speaking again: never send then;
+        the model's speech_start arrives about 0.8 s later and reopens the turn."""
+        voice_again = (last_voice_t is not None and self.pause_start is not None
+                       and last_voice_t > self.pause_start + 0.25 and now - last_voice_t < 0.4)
+        if voice_again:
+            return []
         if self.pending_send_at is not None and now >= self.pending_send_at:
             return self._send(now, "rules")
         if self.awaiting and now >= self.awaiting[1]:
             return self._send(now, "check_timeout", spark={"answer": "timeout"})
         if self.pause_start is not None and self.text:
+            quiet_since = max(self.pause_start, last_voice_t or 0.0)
             if classify(self.text)["no_words"]:
                 if (now - self.opened_at) * 1000 >= self.max_wait_ms:
                     return self._send(now, "max_wait_empty")
-            elif (now - self.pause_start) * 1000 >= self.max_wait_ms:
+            elif (now - quiet_since) * 1000 >= self.max_wait_ms:
                 return self._send(now, "max_wait")
         return []
 

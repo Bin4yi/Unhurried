@@ -16,8 +16,10 @@ MAX_IN_FLIGHT = 3
 
 class Engine:
     def __init__(self, controller: TurnController, now: Callable[[], float],
-                 on_actions: OnActions, provider: str = "spark", checker=check_complete):
+                 on_actions: OnActions, provider: str = "spark", checker=check_complete,
+                 last_voice: Callable[[], float | None] = lambda: None):
         self.c = controller
+        self.last_voice = last_voice
         self.now = now
         self.on_actions = on_actions
         self.provider = provider
@@ -41,7 +43,7 @@ class Engine:
         return self._launch(acts)
 
     def tick(self) -> list[dict]:
-        return self._launch(self.c.tick(self.now()))
+        return self._launch(self.c.tick(self.now(), self.last_voice()))
 
     def typed(self, text: str) -> list[dict]:
         return self._launch(self.c.on_typed(text, self.now()))
