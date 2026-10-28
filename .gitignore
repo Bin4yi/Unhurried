@@ -13,3 +13,4 @@ __pycache__/
 # Session logs and private audio
 runs/
 bench/audio_private/
+.pytest_cache/

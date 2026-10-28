@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unhurried</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>Unhurried</h1>
+  <p class="sub">A voice layer that lets you finish your sentence.</p>
+
+  <section class="card">
+    <div class="row">
+      <button id="start" class="primary">Start</button>
+      <button id="stop" disabled>Stop</button>
+      <span id="status" class="status">Not listening</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Live captions</h2>
+    <div id="captions" class="captions"><span class="committed"></span> <span class="live"></span></div>
+  </section>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
