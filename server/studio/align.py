@@ -112,7 +112,7 @@ def viterbi(em: np.ndarray, tokens: list[int], blank: int) -> np.ndarray:
     states = np.zeros(T, dtype=int)
     for t in range(T - 1, -1, -1):
         states[t] = s
-        s -= back[t, s]
+        s -= int(back[t, s])  # plain int: an int8 here overflows past 127 states
     return states
 
 

@@ -127,3 +127,14 @@ def test_correction_wins_over_overlapping_repeat():
     found = run(edits.find_edits(w, [], chat=chat))
     assert [e["kind"] for e in found] == ["correction"]
     assert edits.clean_text(w, found) == "a table for five people"
+
+
+def test_viterbi_handles_long_recordings():
+    # 400 tokens = 801 CTC states: past the int8 range that used to overflow
+    n, T = 400, 1200
+    rng = np.random.default_rng(1)
+    em = np.log(rng.dirichlet(np.ones(30), size=T))
+    tokens = list(rng.integers(1, 30, size=n))
+    states = align.viterbi(em, tokens, blank=0)
+    assert len(states) == T and states[-1] >= 2 * n - 1
+    assert all(b >= a for a, b in zip(states, states[1:]))   # path only moves forward

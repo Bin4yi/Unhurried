@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 
 from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse
@@ -11,6 +12,7 @@ from fastapi.responses import FileResponse
 from server.studio import jobs, render
 
 router = APIRouter(prefix="/studio")
+log = logging.getLogger("unhurried.studio")
 _tasks: set[asyncio.Task] = set()
 
 
@@ -39,6 +41,7 @@ async def process(audio: UploadFile = File(...), source: str = Form("upload"),
     except ValueError as exc:
         raise HTTPException(400, str(exc))
     except Exception as exc:
+        log.exception("studio processing failed")
         raise HTTPException(502, f"could not process: {type(exc).__name__}")
     return _view(job)
 
