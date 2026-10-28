@@ -166,12 +166,33 @@ function renderReview() {
     li.children[0].textContent = KIND[e.kind];
     li.children[0].classList.add(e.kind);
     li.children[1].textContent = `${e.text}  ·  ${e.start.toFixed(1)} s`;
+    const why = evidence(e);
+    if (why) { const s = document.createElement("small"); s.className = "why-cut"; s.textContent = why; li.children[1].append(document.createElement("br"), s); }
     li.children[2].checked = e.on;
     li.children[2].setAttribute("aria-label", `Cut ${e.text}`);
     li.children[2].onchange = () => toggle(e);
     list.appendChild(li);
   }
   $("clean-text").textContent = job.clean_text;
+  const rej = (job.harness && job.harness.rejected) || [];
+  $("rejected").hidden = !rej.length;
+  $("rejected-list").innerHTML = "";
+  for (const r of rej) {
+    const li = document.createElement("li");
+    li.textContent = `"${r.text}" at ${r.start.toFixed(1)} s: ${r.reason}`;
+    $("rejected-list").appendChild(li);
+  }
+}
+
+function evidence(e) {
+  if (e.kind === "block") return "pause shortened to 0.3 s";
+  if (e.by === "rules") return "found by rules (the model was not sure here)";
+  const parts = ["Spark heard it"];
+  if (e.agreed) parts.push("heard again on a second listen");
+  if (e.confirmed) parts.push("wav2vec 2.0 heard it too");
+  if (!e.agreed && !e.confirmed) parts.push("not confirmed: check it");
+  if (e.limited) parts.push("off: cut limit reached");
+  return parts.join(" · ");
 }
 
 async function toggle(e) {
@@ -202,7 +223,9 @@ $("render").onclick = async () => {
   $("a-clean").src = url;
   $("dl-clean").href = url;
   $("dl-clean").hidden = false;
-  $("render-note").textContent = "Every sound in this file is from your recording.";
+  const c = out.check;
+  $("render-note").textContent = "Every sound in this file is from your recording." +
+    (c ? ` Listened again: ${c.still_heard} of ${c.meant_words} meant words are clearly there.` : "");
   $("render").disabled = false;
   $("a-clean").play();
 };

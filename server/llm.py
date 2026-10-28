@@ -110,9 +110,11 @@ def _provider(name: str) -> tuple[str, str, str]:
 async def chat(messages: list[dict], *, purpose: str, provider: str = "spark",
                tools: list[dict] | None = None, json_mode: bool = False,
                reasoning_effort: str | None = "minimal", max_tokens: int = 600,
-               timeout: float | None = None) -> dict:
-    """One chat completion. Returns {"content", "tool_calls", "ms", "usd", "model"}."""
-    url, key, model = _provider(provider)
+               timeout: float | None = None, model: str | None = None) -> dict:
+    """One chat completion. Returns {"content", "tool_calls", "ms", "usd", "model"}.
+    Message content may include {"type": "input_audio", ...} parts (Muse Spark 1.2 listens)."""
+    url, key, default_model = _provider(provider)
+    model = model or default_model
     body: dict[str, Any] = {"model": model, "messages": messages, "max_tokens": max_tokens}
     if tools:
         body["tools"] = tools

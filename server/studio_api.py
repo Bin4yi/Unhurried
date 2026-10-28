@@ -66,7 +66,8 @@ async def toggle(job_id: str, request: Request):
 async def render_clean(job_id: str):
     job = _job(job_id)
     await asyncio.to_thread(jobs.render_clean, job)
-    return {"url": f"/studio/{job_id}/audio/clean.wav", "clean_text": jobs.clean_text(job)}
+    return {"url": f"/studio/{job_id}/audio/clean.wav", "clean_text": jobs.clean_text(job),
+            "check": job.get("check")}
 
 
 @router.get("/{job_id}/audio/{name}")

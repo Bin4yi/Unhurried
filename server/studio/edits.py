@@ -46,26 +46,32 @@ HEAD_MAX = 3          # a repeated sound is at most this many letters ("B", "BI"
 LOOK_BACK_S = 1.5     # how far before the word's aligned start repeats may be found
 
 
+SHORT_WORDS = set("""a i an at is in on my me we to do go so no up us it of or be by he if am as ok
+oh hi the and for you are was his her our can not but all any how why who use get has had one two
+out see new now way may day too man did let put say she try own yes ask big end far few got run
+set top yet its him they them this that with from have""".split())
+
+
 def is_sound_token(tok: str, next_word: str) -> bool:
-    """Transcript tokens that are repeated sounds, not words: 'BBV', 'Pp', 'b-', 'ppp'."""
+    """Tokens that are attempts at the next word, not words: 'BBV', 'Pp', 'b-', 'ma' (mouse)."""
     t, n = norm(tok).upper(), norm(next_word).upper()
-    if not t or not n or t[0] != n[0] or len(t) > 4 or t == n:
+    if not t or not n or len(t) > 4 or t == n or _fold(t)[0] != _fold(n)[0]:
         return False
-    # real words almost always have a vowel; "BBV", "Pp", "ppp" do not
-    return tok.endswith("-") or not (set(t) & VOWELS)
+    if tok.endswith("-") or not (set(t) & VOWELS):
+        return True       # real words almost always have a vowel; "BBV", "Pp", "ppp" do not
+    # a very short piece that is not a common word, right before a longer word with its sound
+    return len(t) <= 2 and t.lower() not in SHORT_WORDS and len(n) >= 4
 
 
 # Voiced and voiceless pairs sound alike to an acoustic model ("p" is often heard as "b").
-PAIRS = {"B": "P", "P": "B", "D": "T", "T": "D", "G": "K", "K": "G", "C": "K", "V": "F",
-         "F": "V", "Z": "S", "S": "Z"}
+SOUND_CLASS = {"P": "B", "T": "D", "K": "G", "C": "G", "Q": "G", "V": "F", "Z": "S"}
 
 
 def _fold(text: str) -> str:
-    """Fold the first letter onto its voiced/voiceless twin, for matching."""
+    """Map the first letter to its sound class (b=p, d=t, g=k=c, f=v, s=z), for matching."""
     if not text:
         return text
-    c = text[0]
-    return min(c, PAIRS.get(c, c)) + text[1:]
+    return SOUND_CLASS.get(text[0], text[0]) + text[1:]
 
 
 def acoustic_chains(word: Word, prev_end: float, acoustic: list[dict]) -> dict | None:
@@ -143,7 +149,8 @@ def find_repeats(words: list[Word]) -> list[dict]:
                 j += n
             if j > i and not any(k in covered for k in range(i, j + n)):
                 if not (n == 1 and toks[i] in FILLERS):
-                    out.append(_edit("repeat", words, i, j - 1, end=words[j].start))
+                    kind = "sound" if words[i].text.endswith("-") else "repeat"
+                    out.append(_edit(kind, words, i, j - 1, end=words[j].start))
                     covered.update(range(i, j))
                 i = j + n
             else:

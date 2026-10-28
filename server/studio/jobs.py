@@ -24,7 +24,7 @@ from pathlib import Path
 import numpy as np
 
 from server import llm
-from server.studio import align, edits as edits_mod, render
+from server.studio import align, edits as edits_mod, listen, render
 
 DATA = Path("studio_data")
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -96,13 +96,13 @@ async def create(data: bytes, source: str, keywords: list[str], use_spark: bool 
         t0 = time.monotonic()
         tr = await llm.transcribe_file(wav, keywords=keywords, purpose="studio")
         transcript = " ".join(t["transcript"] for t in tr.get("turns", [])) or tr.get("transcript", "")
-        words, acoustic = await asyncio.to_thread(align.align_all, to16k(x, rate), transcript)
-        found = await edits_mod.find_edits(words, acoustic, use_spark=use_spark)
+        words, found, harness = await analyze(to16k(x, rate), transcript, use_spark)
     except Exception:
         shutil.rmtree(d, ignore_errors=True)
         raise
     job = {"id": job_id, "source": source, "created": time.time(), "duration": round(len(x) / rate, 3),
            "transcript": transcript, "words": [w.__dict__ for w in words], "edits": found,
+           "harness": harness,
            "ms": round((time.monotonic() - t0) * 1000), "verified": False, "clone": None}
     save(job)
     return job
@@ -112,11 +112,29 @@ async def reanalyze(job: dict, use_spark: bool = True) -> dict:
     """Find the cuts again from the saved recording (after the cut finder improves)."""
     d = _dir(job["id"])
     x, rate = render.read_wav_bytes((d / "original.wav").read_bytes())
-    words, acoustic = await asyncio.to_thread(align.align_all, to16k(x, rate), job["transcript"])
-    job["words"] = [w.__dict__ for w in words]
-    job["edits"] = await edits_mod.find_edits(words, acoustic, use_spark=use_spark)
+    words, found, harness = await analyze(to16k(x, rate), job["transcript"], use_spark)
+    job.update(words=[w.__dict__ for w in words], edits=found, harness=harness, check=None)
     save(job)
     return job
+
+
+async def analyze(x16: np.ndarray, transcript: str, use_spark: bool) -> tuple[list, list, dict]:
+    """Model-led scan (Spark listens, code verifies); code rules only as the fallback."""
+    vt_words, acoustic = await asyncio.to_thread(align.align_all, x16, transcript)
+    if not use_spark:
+        return vt_words, await edits_mod.find_edits(vt_words, acoustic, use_spark=False), {"mode": "rules"}
+    res = await listen.scan(x16, vt_words, acoustic)
+    words, found = res["words"], res["edits"]
+    taken = {k for e in found if e.get("words") for k in range(e["words"][0], e["words"][1] + 1)}
+    for e in await edits_mod.find_corrections(words):
+        if not taken & set(range(e["words"][0], e["words"][1] + 1)):
+            e["by"] = "spark"
+            found.append(e)
+    found += edits_mod.find_blocks(words)
+    found.sort(key=lambda e: e["start"])
+    for n, e in enumerate(found, 1):
+        e["id"] = f"e{n}"
+    return words, found, {"mode": "model", "rejected": res["rejected"], "pieces": res["pieces"]}
 
 
 def apply_toggles(job: dict, on: dict[str, bool]) -> dict:
@@ -135,7 +153,10 @@ def clean_text(job: dict) -> str:
 def render_clean(job: dict) -> Path:
     d = _dir(job["id"])
     x, rate = render.read_wav_bytes((d / "original.wav").read_bytes())
-    (d / "clean.wav").write_bytes(render.wav_bytes(render.render(x, rate, job["edits"]), rate))
+    y = render.render(x, rate, job["edits"])
+    (d / "clean.wav").write_bytes(render.wav_bytes(y, rate))
+    job["check"] = listen.content_check(y, rate, clean_text(job))   # listen again
+    save(job)
     return d / "clean.wav"
 
 

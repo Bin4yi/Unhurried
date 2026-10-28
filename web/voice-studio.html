@@ -40,7 +40,7 @@
         <div class="rec-hint" id="rec-hint">Press to record. Take all the time you need. Up to 3 minutes.</div>
         <div class="row" style="margin-top:8px">
           <label class="btn" style="margin:0">Or upload audio<input id="upload" type="file" accept="audio/*" class="sr-only"></label>
-          <label class="muted"><input id="use-spark" type="checkbox" checked> Find self-corrections with Muse Spark</label>
+          <label class="muted"><input id="use-spark" type="checkbox" checked> Let Muse Spark listen for stammers (checked by code)</label>
         </div>
       </div>
     </div>
@@ -68,6 +68,10 @@
       <div>
         <h3 class="eyebrow" style="margin-top:16px">Cuts</h3>
         <ul class="edits" id="edits"></ul>
+        <div id="rejected" hidden>
+          <h3 class="eyebrow" style="margin-top:18px">Turned down by the checks</h3>
+          <ul class="rules" id="rejected-list"></ul>
+        </div>
       </div>
     </div>
   </section>

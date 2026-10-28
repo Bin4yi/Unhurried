@@ -171,3 +171,9 @@ def test_acoustic_chain_ignores_other_words():
     ac2 = [{"text": "MY", "start": 2.0, "end": 2.2}, {"text": "MY", "start": 2.25, "end": 2.4},
            {"text": "NAME", "start": 2.5, "end": 2.8}]
     assert edits.find_sounds(w2, ac2) == []
+
+
+def test_short_attempt_before_word():
+    assert edits.is_sound_token("ma", "mouse") and edits.is_sound_token("ca", "currently")
+    for word, nxt in [("my", "mouse"), ("to", "test"), ("in", "india"), ("a", "apple"), ("me", "meta")]:
+        assert not edits.is_sound_token(word, nxt)
