@@ -16,6 +16,7 @@ from server import llm
 from server.audio_router import AudioRouter
 from server.bot.booking_bot import BookingBot, BookingStore
 from server.engine import Engine
+from server.rebuild import rebuild
 from server.runlog import RUNS, RunLog, new_session_id
 from server.timing_profile import TimingProfile
 from server.turn_controller import TurnController
@@ -55,7 +56,9 @@ class Session:
         # otherwise the server-side pause profile for this user id.
         self.profile = TimingProfile.load(str(start.get("user_id") or "u1"))
         max_wait = int(start.get("max_wait_ms") or self.profile.max_wait_ms)
-        engine_cfg = {"spark_check": True, **(start.get("engine") or {})}
+        engine_cfg = {"spark_check": True, "rebuild_spark": True, **(start.get("engine") or {})}
+        self.engine_cfg = engine_cfg
+        self.switches = [s for s in (start.get("switches") or []) if isinstance(s, dict)]
         self.controller = TurnController(
             max_wait_ms=max_wait, use_checker=bool(engine_cfg["spark_check"]),
             check_timeout_ms=int(engine_cfg.get("check_timeout_ms", 700)))
@@ -98,7 +101,7 @@ class Session:
             await self.emit(ev)
         if self.mode == "baseline":
             if kind == "model_turn" and ev["text"]:
-                await self.dispatch_turn(ev["text"], ev["text"], reason="model_end")
+                await self.dispatch_turn(ev["text"], reason="model_end")
             return
         acts = await self.engine.handle(ev)
         if kind == "model_turn":
@@ -117,23 +120,36 @@ class Session:
             elif a["do"] == "resume":
                 await self.emit({"type": "resume", "t": self.now})
             elif a["do"] == "send":
-                await self.dispatch_turn(a["text"], a["text"], reason=a["reason"])
+                await self.dispatch_turn(a["text"], reason=a["reason"])
 
-    async def dispatch_turn(self, raw: str, clean: str, *, reason: str, **extra) -> None:
-        """Send one finished user turn to the bot."""
+    async def dispatch_turn(self, raw: str, *, reason: str) -> None:
+        """The person's turn is finished: queue it for rebuild and the bot."""
         self.turn_count += 1
-        turn = {"type": "turn", "n": self.turn_count, "raw": raw, "clean": clean,
-                "reason": reason, "speech_end_t": self.last_speech_end, "sent_t": self.now,
-                **extra}
-        self.log.write("turns", turn)
-        await self.emit(turn)
-        await self.turns.put(clean)
+        item = {"n": self.turn_count, "raw": raw, "reason": reason,
+                "speech_end_t": self.last_speech_end, "sent_t": self.now}
+        await self.emit({"type": "sending", "n": self.turn_count, "t": self.now})
+        await self.turns.put(item)
+
+    async def clean_turn(self, item: dict) -> dict:
+        """Meaning rebuild in unhurried mode; baseline passes raw text through."""
+        if self.mode != "unhurried":
+            return {"type": "turn", **item, "clean": item["raw"], "changes": [],
+                    "confidence": 1.0, "needs_confirm": False, "guard_fails": []}
+        rb = await rebuild(item["raw"], self.switches,
+                           use_spark=bool(self.engine_cfg.get("rebuild_spark", True)),
+                           provider=self.engine_cfg.get("provider", "spark"))
+        return {"type": "turn", **item, **{k: rb[k] for k in (
+            "clean", "changes", "confidence", "needs_confirm", "guard_fails", "spark")}}
 
     async def _bot_worker(self) -> None:
         while True:
-            text = await self.turns.get()
-            if text is None:
+            item = await self.turns.get()
+            if item is None:
                 return
+            turn = await self.clean_turn(item)
+            self.log.write("turns", turn)
+            await self.emit(turn)
+            text = turn["clean"]
             t0 = time.monotonic()
             try:
                 out = await self.bot.respond(text)
@@ -151,7 +167,7 @@ class Session:
             if self.mode == "unhurried":
                 await self.act(self.engine.typed(cmd["text"]))
             else:
-                await self.dispatch_turn(cmd["text"], cmd["text"], reason="typed")
+                await self.dispatch_turn(cmd["text"], reason="typed")
 
     async def stop(self) -> None:
         if self._stopped:

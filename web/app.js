@@ -64,6 +64,7 @@ function onEvent(ev) {
     case "model_text": c.done.textContent = ev.text; c.live.textContent = ""; break;
     case "speech_start": break;
     case "hold": showCue(true); break;
+    case "sending": showCue(false); break;
     case "turn":
       showCue(false);
       c.done.textContent = ""; c.live.textContent = "";
