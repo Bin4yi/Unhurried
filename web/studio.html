@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unhurried Studio</title>
+  <meta name="description" content="Talk to a voice assistant that waits for you to finish.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="studio.css">
+</head>
+<body>
+<header class="top">
+  <h1 class="mark">unhurried<span>.</span></h1>
+  <span class="tag">Studio</span>
+  <div class="spacer"></div>
+  <div class="seg" role="group" aria-label="Mode">
+    <button data-mode="unhurried" aria-pressed="true">Unhurried</button>
+    <button data-mode="baseline" aria-pressed="false">Normal bot</button>
+    <button data-mode="compare" aria-pressed="false">Side by side</button>
+  </div>
+  <button class="icon-btn" id="voice-toggle" aria-pressed="true" title="Speak the assistant's replies">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>
+    <span>Voice on</span>
+  </button>
+  <button class="icon-btn" id="open-settings" aria-haspopup="dialog">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+    <span>Settings</span>
+  </button>
+</header>
+
+<main class="studio">
+  <div>
+    <section class="card stage" aria-labelledby="stage-title">
+      <div class="stage-head">
+        <h2 id="stage-title" class="eyebrow" style="margin:0">Your turn</h2>
+        <div class="spacer"></div>
+        <span class="status" id="status" data-state="idle"><i></i><span>Not listening</span></span>
+      </div>
+      <div class="stage-body">
+        <div>
+          <p class="caption" id="caption" aria-live="polite">
+            <span class="hint">Press Begin, then ask to book a table. Pause whenever you need to.</span>
+          </p>
+          <p class="cue" id="cue" role="status">Take your time.</p>
+        </div>
+        <div class="orb-wrap" aria-hidden="true"><div class="orb idle" id="orb"></div></div>
+      </div>
+      <div class="confirm" id="confirm" role="alertdialog" aria-labelledby="confirm-text">
+        <p id="confirm-text"></p>
+        <div class="row">
+          <button class="btn solid" id="confirm-yes">Yes</button>
+          <button class="btn" id="confirm-change">Change</button>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <button class="begin" id="begin">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          <span>Begin</span>
+        </button>
+        <span class="note" id="note">Your audio is not stored.</span>
+      </div>
+    </section>
+
+    <section class="card convo" aria-labelledby="convo-title">
+      <h2 id="convo-title" class="eyebrow">Conversation</h2>
+      <div class="lines" id="lines"><p class="empty">Nothing yet. The assistant books tables at a small restaurant.</p></div>
+      <form class="type-bar" id="type-form">
+        <label for="typed" class="sr-only">Type a message</label>
+        <input id="typed" type="text" placeholder="Or type. It joins the sentence you are saying." autocomplete="off">
+        <button class="btn" type="submit">Send</button>
+      </form>
+    </section>
+  </div>
+
+  <aside class="side" aria-label="Inspector">
+    <section class="card panel" aria-labelledby="stats-title">
+      <h2 id="stats-title" class="eyebrow">This session</h2>
+      <div class="stats">
+        <div class="stat accent"><b id="s-saved">0</b><span>times a normal bot would have cut in</span></div>
+        <div class="stat"><b id="s-longest">0.0s</b><span>longest pause you were given</span></div>
+        <div class="stat"><b id="s-turns">0</b><span>turns sent</span></div>
+        <div class="stat"><b id="s-fixes">0</b><span>repeats and fillers cleaned</span></div>
+      </div>
+    </section>
+
+    <section class="card panel compare" id="compare-panel" hidden aria-labelledby="compare-title">
+      <h2 id="compare-title" class="eyebrow">What a normal bot heard</h2>
+      <div class="lines" id="compare-lines"><p class="muted">Same microphone, default end-of-speech.</p></div>
+    </section>
+
+    <section class="card panel" aria-labelledby="last-title">
+      <h2 id="last-title" class="eyebrow">Last decision</h2>
+      <p class="verdict" id="verdict">Waiting</p>
+      <p class="why" id="why">Each time you pause, Unhurried decides: wait, or send.</p>
+      <div class="signals">
+        <div class="sig"><span class="k">Words</span><span id="sig-words" class="v">–</span><span></span></div>
+        <div class="sig"><span class="k">Voice</span><div class="bar"><i id="sig-sound-bar"></i></div><span id="sig-sound" class="v">–</span></div>
+        <div class="sig"><span class="k">Spark</span><span id="sig-spark" class="v">–</span><span></span></div>
+      </div>
+    </section>
+
+    <section class="card panel" aria-labelledby="tl-title">
+      <h2 id="tl-title" class="eyebrow">Every pause</h2>
+      <ol class="timeline" id="timeline"><li class="muted" style="display:block">No pauses yet.</li></ol>
+    </section>
+
+    <section class="card panel" id="suggestions" hidden aria-labelledby="sug-title">
+      <h2 id="sug-title" class="eyebrow">Suggestions for your settings</h2>
+      <p class="muted">Based on this session. Nothing changes unless you approve it.</p>
+      <div class="list"></div>
+    </section>
+  </aside>
+</main>
+
+<dialog class="drawer" id="settings" aria-labelledby="settings-title">
+  <button class="icon-btn close" id="close-settings">Close</button>
+  <h2 id="settings-title">Settings</h2>
+  <p class="muted">Changes apply when you press Begin.</p>
+
+  <h3>How Unhurried listens</h3>
+  <label for="engine">Turn engine</label>
+  <select id="engine">
+    <option value="words_spark">Words + Spark check (fewest cut-offs)</option>
+    <option value="words_sound_spark">Words + voice + Spark (fastest)</option>
+    <option value="words">Words only</option>
+  </select>
+  <label for="words">Words to listen for</label>
+  <input id="words" type="text" placeholder="Names, places. Comma separated.">
+  <p class="muted">Sent to the speech service during a session so it hears them.</p>
+
+  <h3>Voice Passport</h3>
+  <p class="muted">Your pause timing, words and settings, encrypted in this browser. The server stores only a locked file. No audio, no scores.</p>
+  <p id="pp-status" class="muted"></p>
+  <input id="pp-pass" type="password" placeholder="Passphrase (8+ characters)" aria-label="Passphrase" autocomplete="current-password">
+  <div class="row"><button class="btn solid" id="pp-unlock">Unlock</button><button class="btn" id="pp-lock">Lock</button></div>
+  <label for="pp-words" style="margin-top:14px">My words</label>
+  <div class="row"><input id="pp-words" type="text" placeholder="Saved in the passport" style="flex:1"><button class="btn" id="pp-save-words">Save</button></div>
+  <label><input id="pp-show-cue" type="checkbox"> Show "Take your time"</label>
+  <div class="row" style="margin-top:10px">
+    <button class="btn" id="pp-export">Export</button>
+    <label class="btn" style="margin:0">Import<input id="pp-import" type="file" accept="application/json" class="sr-only"></label>
+    <button class="btn" id="pp-delete">Delete everything</button>
+  </div>
+  <p id="pp-msg" class="muted" role="status"></p>
+
+  <h3>About</h3>
+  <p class="muted">Unhurried changes how the assistant listens. It never scores or rates speech.
+    <a href="privacy.html">Privacy</a> · <a href="demo.html">Clip demo</a> · <a href="/bench/record.html">Record clips</a></p>
+</dialog>
+
+<footer class="foot">Built on Meta Muse Voice Transcribe and Muse Spark.</footer>
+<script type="module" src="studio.js"></script>
+<script type="module" src="passport.js"></script>
+</body>
+</html>

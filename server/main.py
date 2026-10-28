@@ -21,7 +21,7 @@ app.include_router(bench_api.router)
 
 @app.get("/")
 async def index():
-    return RedirectResponse("/web/index.html")
+    return RedirectResponse("/web/studio.html")
 
 
 @app.post("/profile/{pid}")

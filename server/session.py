@@ -126,15 +126,19 @@ class Session:
 
     async def act(self, acts: list[dict]) -> None:
         """Carry out turn-controller actions and write new decision log rows."""
-        for row in self.controller.decisions[self._logged_decisions:]:
-            self.log.write("decisions", row)
+        new_rows = self.controller.decisions[self._logged_decisions:]
         self._logged_decisions = len(self.controller.decisions)
+        for row in new_rows:
+            self.log.write("decisions", row)
+            await self.emit({"type": "decision", **row})  # the Studio inspector shows these
         for a in acts:
             if a["do"] == "hold":
                 await self.emit({"type": "hold", "reason": a["reason"],
                                  "max_wait_ms": a["max_wait_ms"], "t": self.now})
             elif a["do"] == "resume":
-                await self.emit({"type": "resume", "t": self.now})
+                pauses = self.controller.inner_pauses_ms
+                await self.emit({"type": "resume", "t": self.now,
+                                 "pause_ms": pauses[-1] if pauses else None})
             elif a["do"] == "send":
                 await self.dispatch_turn(a["text"], reason=a["reason"])
 

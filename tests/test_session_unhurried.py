@@ -49,6 +49,9 @@ def test_unhurried_joins_turns_and_sends_clean_text():
     run(go())
     kinds = [e["type"] for e in sent]
     assert "hold" in kinds and kinds.count("turn") == 1
+    decisions = [e for e in sent if e["type"] == "decision"]
+    assert [d["decision"] for d in decisions] == ["hold", "send_soon", "send"]
+    assert decisions[0]["reason"] == "linking_word"
     turn = next(e for e in sent if e["type"] == "turn")
     assert turn["raw"] == "I-I want to b-b-book a table for two"
     assert turn["clean"] == "I want to book a table for two"
