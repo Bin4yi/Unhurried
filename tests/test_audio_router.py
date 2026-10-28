@@ -26,7 +26,7 @@ def test_recent_audio_keeps_last_seconds():
     for _ in range(50):
         run(r.feed(chunk))
     assert len(r.recent_audio(0.5)) == 12000
-    assert r._recent_samples <= 3 * 24000 + 2400
+    assert r._recent_samples <= 4 * 24000 + 2400
     assert abs(r.recent_audio(0.1)[0] - 1000 / 32768) < 1e-6
 
 

@@ -25,7 +25,7 @@ VOICE_OVER_FLOOR = 4.0    # voice must be this many times above the noise floor
 
 
 class AudioRouter:
-    def __init__(self, stream, emit: Emit, rate: int = 24000, keep_seconds: float = 3.0):
+    def __init__(self, stream, emit: Emit, rate: int = 24000, keep_seconds: float = 4.0):
         self.stream = stream
         self.emit = emit
         self.rate = rate
@@ -67,6 +67,14 @@ class AudioRouter:
             return np.zeros(0, dtype=np.float32)
         allx = np.concatenate(list(self._recent)).astype(np.float32) / 32768.0
         return allx[-int(seconds * self.rate):]
+
+    def audio_between(self, t0: float, t1: float) -> np.ndarray:
+        """Audio from t0 to t1 (audio seconds), as far as the recent buffer reaches."""
+        buf = self.recent_audio(self._keep / self.rate)
+        start_t = self.audio_t - len(buf) / self.rate
+        i0 = max(0, int((t0 - start_t) * self.rate))
+        i1 = max(i0, min(len(buf), int((t1 - start_t) * self.rate)))
+        return buf[i0:i1]
 
     def normalize(self, ev: dict) -> dict | None:
         kind = ev.get("type")

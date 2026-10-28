@@ -15,6 +15,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+from server.sound import verdict
+
 LINKING = {
     "to", "the", "a", "an", "for", "and", "or", "my", "at", "of", "with", "can", "is",
     "are", "in", "on", "from", "but", "because", "your", "our", "some", "this", "that",
@@ -64,6 +66,8 @@ class TurnController:
     send_delay_ms: int = 300
     use_checker: bool = False
     check_timeout_ms: int = 700
+    use_sound: bool = False
+    sound: dict | None = None  # sound features for the current pause
     segments: list[str] = field(default_factory=list)
     partial: str = ""
     pause_start: float | None = None
@@ -97,13 +101,15 @@ class TurnController:
         self.pause_start = None
         self.pending_send_at = None
         self.awaiting = None
+        self.sound = None
         return acts
 
     def on_pause(self, end_t: float, now: float) -> list[dict]:
         self.pause_start = end_t
         return []
 
-    def on_model_turn(self, text: str, now: float) -> list[dict]:
+    def on_model_turn(self, text: str, now: float, sound: dict | None = None) -> list[dict]:
+        self.sound = sound
         if text:
             self.segments.append(text)
         self.partial = ""
@@ -143,6 +149,10 @@ class TurnController:
         if self.pending_send_at is not None and now >= self.pending_send_at:
             return self._send(now, "rules")
         if self.awaiting and now >= self.awaiting[1]:
+            if self.use_sound and verdict(self.sound) == "unfinished":
+                self.awaiting = None
+                return self._hold(now, "check_timeout_sound", classify(self.text),
+                                  spark={"answer": "timeout"})
             return self._send(now, "check_timeout", spark={"answer": "timeout"})
         if self.pause_start is not None and self.text:
             quiet_since = max(self.pause_start, last_voice_t or 0.0)
@@ -162,6 +172,11 @@ class TurnController:
         sig = classify(text)
         if sig["unfinished"]:
             return self._hold(now, "no_words" if sig["no_words"] else _first_reason(sig), sig)
+        sound = verdict(self.sound) if self.use_sound else None
+        if sound == "finished":
+            return self._send(now, "words_sound")       # both agree: no model call needed
+        if self.use_sound and self.sound and self.sound["voiced_in_pause"]:
+            return self._hold(now, "voice_in_pause", sig)
         if self.use_checker:
             cached = self.check_cache.get(check_key(text))
             if cached and cached["answer"] in ("yes", "no"):
@@ -169,6 +184,8 @@ class TurnController:
             self.awaiting = (check_key(text), now + self.check_timeout_ms / 1000)
             self._log(now, sig, "check", spark=None)
             return [{"do": "check", "text": text}]
+        if sound == "unfinished":
+            return self._hold(now, "sound", sig)
         self.pending_send_at = now + self.send_delay_ms / 1000
         self._log(now, sig, "send_soon")
         return []
@@ -189,6 +206,7 @@ class TurnController:
         self._log(now, classify(text), "send", spark=spark, reason=reason)
         self.segments, self.partial = [], ""
         self.pause_start = self.pending_send_at = self.awaiting = None
+        self.sound = None
         self.holding = False
         self.opened_at = now
         return [{"do": "send", "text": text, "reason": reason}] if text else []
@@ -199,7 +217,7 @@ class TurnController:
         self.decisions.append({
             "t": round(now, 3), "pause_ms": pause_ms, "last_words": tokens(self.text)[-2:],
             "signals": {k: sig[k] for k in ("linking_word", "cut_word", "repeat", "filler")},
-            "spark_check": spark, "decision": decision, "reason": reason,
+            "spark_check": spark, "sound": self.sound, "decision": decision, "reason": reason,
             "max_wait_ms": self.max_wait_ms,
         })
 

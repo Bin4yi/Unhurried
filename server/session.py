@@ -19,6 +19,7 @@ from server.confirm import ConfirmGate, spoken_answer
 from server.engine import Engine
 from server.rebuild import rebuild
 from server.runlog import RUNS, RunLog, new_session_id
+from server.sound import analyze
 from server.timing_profile import TimingProfile
 from server.turn_controller import TurnController
 
@@ -68,12 +69,19 @@ class Session:
         self.switches = [s for s in (start.get("switches") or []) if isinstance(s, dict)]
         self.controller = TurnController(
             max_wait_ms=max_wait, use_checker=bool(engine_cfg["spark_check"]),
-            check_timeout_ms=int(engine_cfg.get("check_timeout_ms", 700)))
+            check_timeout_ms=int(engine_cfg.get("check_timeout_ms", 700)),
+            use_sound=bool(engine_cfg.get("sound", False)))
         kw = {"checker": checker} if checker else {}
         self.engine = Engine(self.controller, lambda: self.now, self.act,
                              provider=engine_cfg.get("provider", "spark"),
-                             last_voice=lambda: self.router.last_voice_t, **kw)
+                             last_voice=lambda: self.router.last_voice_t,
+                             sound=self.sound_features, **kw)
         self._logged_decisions = 0
+
+    def sound_features(self, end_t: float, now: float) -> dict:
+        r = self.router
+        return analyze(r.audio_between(end_t - 0.5, end_t), r.audio_between(end_t, now),
+                       r.rate, r.noise_floor)
 
     @property
     def now(self) -> float:

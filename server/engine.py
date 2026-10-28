@@ -17,8 +17,10 @@ MAX_IN_FLIGHT = 3
 class Engine:
     def __init__(self, controller: TurnController, now: Callable[[], float],
                  on_actions: OnActions, provider: str = "spark", checker=check_complete,
-                 last_voice: Callable[[], float | None] = lambda: None):
+                 last_voice: Callable[[], float | None] = lambda: None,
+                 sound: Callable[[float, float], dict | None] = lambda end_t, now: None):
         self.c = controller
+        self.sound = sound
         self.last_voice = last_voice
         self.now = now
         self.on_actions = on_actions
@@ -37,7 +39,11 @@ class Engine:
         elif kind == "speech_end":
             acts = c.on_pause(ev["end_t"], now)
         elif kind == "model_turn":
-            acts = c.on_model_turn(ev["text"], now)
+            snd = None
+            if c.use_sound:
+                end_t = c.pause_start if c.pause_start is not None else now
+                snd = self.sound(end_t, now)
+            acts = c.on_model_turn(ev["text"], now, sound=snd)
         else:
             return []
         return self._launch(acts)
