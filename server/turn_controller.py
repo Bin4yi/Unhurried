@@ -124,7 +124,9 @@ class TurnController:
         return self._send(now, "check_yes" if answer == "yes" else "check_failed", spark=spark)
 
     def on_typed(self, text: str, now: float) -> list[dict]:
-        """Typed text joins the open turn and sends it."""
+        """Typed text joins the open turn (including live partial text) and sends it."""
+        if self.partial:
+            self.segments.append(self.partial)
         if text.strip():
             self.segments.append(text.strip())
         self.partial = ""

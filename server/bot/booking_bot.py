@@ -15,7 +15,12 @@ SYSTEM = (
     "otherwise ask for what is missing. Time is 24h HH:MM (7 pm = 19:00). "
     "Day is a weekday name like Friday, or 'today' / 'tomorrow'. "
     "Your replies are spoken aloud: keep them to one or two short sentences, "
-    "no lists, no emoji."
+    "no lists, no emoji. "
+    "Calm pace: the caller may pause or repeat sounds while speaking; that is normal. "
+    "Never hurry them, never finish their sentence for them, and never comment on how "
+    "they speak. Do not repeat a question you asked in your previous reply; if something "
+    "is still missing, ask for it once in different, simple words. Never say "
+    "'sorry, I didn't catch that' twice in a row."
 )
 
 TOOLS = [

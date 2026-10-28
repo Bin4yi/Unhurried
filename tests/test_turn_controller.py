@@ -112,3 +112,15 @@ def test_decision_log_format():
     assert row["signals"]["linking_word"] is True
     assert set(row) >= {"t", "pause_ms", "last_words", "signals", "spark_check",
                         "decision", "max_wait_ms"}
+
+
+def test_typed_text_with_no_open_turn_sends_alone():
+    c = TurnController()
+    assert c.on_typed("What time do you close?", 1.0) == [
+        {"do": "send", "text": "What time do you close?", "reason": "typed"}]
+
+
+def test_typed_text_merges_with_live_partial():
+    c = TurnController()
+    c.on_partial("Book a table", 1.0)
+    assert c.on_typed("for Matara branch", 2.0)[0]["text"] == "Book a table for Matara branch"

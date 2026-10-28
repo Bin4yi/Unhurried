@@ -76,3 +76,10 @@ def test_list_bookings_skips_gate():
     ])
     run(BookingBot(chat=chat, gate=gate).respond("What are my bookings?"))
     assert called == []
+
+
+def test_system_prompt_has_calm_pace_rules():
+    from server.bot.booking_bot import SYSTEM
+    assert "never finish their sentence" in SYSTEM
+    assert "Do not repeat a question" in SYSTEM
+    assert "twice in a row" in SYSTEM
