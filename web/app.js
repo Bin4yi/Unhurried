@@ -6,6 +6,14 @@ const SPEECH_RATE = 0.9;
 
 function setStatus(s) { $("status").textContent = s; }
 
+function userWords() {
+  return $("words").value.split(",").map((w) => w.trim()).filter(Boolean);
+}
+try { $("words").value = localStorage.getItem("unhurried.words") || ""; } catch {}
+$("words").addEventListener("change", () => {
+  try { localStorage.setItem("unhurried.words", $("words").value); } catch {}
+});
+
 function addMsg(who, text, raw) {
   const div = document.createElement("div");
   div.className = `msg ${who}`;
@@ -79,7 +87,8 @@ async function start() {
   ws.onclose = () => { setStatus("Not listening"); cleanup(); };
   await new Promise((r) => (ws.onopen = r));
   const ready = new Promise((r) => (onReady = r));
-  send({ type: "start", mode: $("mode").value, ...(window.unhurriedSessionExtras?.() || {}) });
+  send({ type: "start", mode: $("mode").value, keywords: userWords(),
+    ...(window.unhurriedSessionExtras?.() || {}) });
   await ready;  // start the mic only once the speech stream is open
   // While the bot is speaking, send silence so the mic does not hear the bot.
   stopMic = await startMic((chunk) => ws && ws.readyState === 1 && ws.send(chunk),

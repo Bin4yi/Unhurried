@@ -34,6 +34,11 @@ def tokens(text: str) -> list[str]:
     return _WORD.findall(text.lower().replace("…", "-"))
 
 
+def check_key(text: str) -> str:
+    """Normalized text used to match completeness answers (case and punctuation free)."""
+    return " ".join(tokens(text))
+
+
 def classify(text: str) -> dict:
     """Code rules on the current text. Returns the signals and `unfinished`."""
     toks = tokens(text)
@@ -107,13 +112,16 @@ class TurnController:
         return self.decide(now)
 
     def on_check(self, text: str, answer: str, ms: float, now: float) -> list[dict]:
-        self.check_cache[text] = {"answer": answer, "ms": round(ms)}
-        if not self.awaiting or self.awaiting[0] != text or self.pause_start is None:
+        key = check_key(text)
+        self.check_cache[key] = {"answer": answer, "ms": round(ms)}
+        if not self.awaiting or self.awaiting[0] != key or self.pause_start is None:
             return []
         self.awaiting = None
-        if answer == "yes":
-            return self._send(now, "check_yes", spark={"answer": answer, "ms": round(ms)})
-        return self._hold(now, "check_no", classify(text), spark={"answer": answer, "ms": round(ms)})
+        spark = {"answer": answer, "ms": round(ms)}
+        if answer == "no":
+            return self._hold(now, "check_no", classify(self.text), spark=spark)
+        # yes, or the checker failed: do not make the person wait for a broken check
+        return self._send(now, "check_yes" if answer == "yes" else "check_failed", spark=spark)
 
     def on_typed(self, text: str, now: float) -> list[dict]:
         """Typed text joins the open turn and sends it."""
@@ -145,10 +153,10 @@ class TurnController:
         if sig["unfinished"]:
             return self._hold(now, "no_words" if sig["no_words"] else _first_reason(sig), sig)
         if self.use_checker:
-            cached = self.check_cache.get(text)
+            cached = self.check_cache.get(check_key(text))
             if cached and cached["answer"] in ("yes", "no"):
                 return self.on_check_cached(text, cached, now)
-            self.awaiting = (text, now + self.check_timeout_ms / 1000)
+            self.awaiting = (check_key(text), now + self.check_timeout_ms / 1000)
             self._log(now, sig, "check", spark=None)
             return [{"do": "check", "text": text}]
         self.pending_send_at = now + self.send_delay_ms / 1000
