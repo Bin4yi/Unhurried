@@ -1,7 +1,7 @@
 import { startMic } from "./mic.js";
 
 const $ = (id) => document.getElementById(id);
-let ws = null, stopMic = null;
+let ws = null, stopMic = null, onReady = null;
 const SPEECH_RATE = 0.9;
 
 function setStatus(s) { $("status").textContent = s; }
@@ -51,7 +51,7 @@ function showConfirm(ev) {
 function onEvent(ev) {
   const c = captions();
   switch (ev.type) {
-    case "ready": setStatus(`Listening (${ev.mode})`); break;
+    case "ready": setStatus(`Listening (${ev.mode})`); if (onReady) onReady(); break;
     case "partial": c.live.textContent = ev.text; break;
     case "model_text": c.done.textContent = ev.text; c.live.textContent = ""; break;
     case "speech_start": break;
@@ -78,7 +78,9 @@ async function start() {
   ws.onmessage = (m) => onEvent(JSON.parse(m.data));
   ws.onclose = () => { setStatus("Not listening"); cleanup(); };
   await new Promise((r) => (ws.onopen = r));
+  const ready = new Promise((r) => (onReady = r));
   send({ type: "start", mode: $("mode").value, ...(window.unhurriedSessionExtras?.() || {}) });
+  await ready;  // start the mic only once the speech stream is open
   // While the bot is speaking, send silence so the mic does not hear the bot.
   stopMic = await startMic((chunk) => ws && ws.readyState === 1 && ws.send(chunk),
     () => speechSynthesis.speaking);

@@ -61,7 +61,7 @@ class AudioRouter:
                 return None  # stream-final; model turns come from speechComplete
             return {"type": "partial", "text": (ev.get("transcript") or "").strip(), "t": now}
         if kind == "speechStart":
-            return {"type": "speech_start", "t": now, "turn_id": ev.get("turnId")}
+            return {"type": "speech_start", "t": now, "start_t": t, "turn_id": ev.get("turnId")}
         if kind == "speechEnd":
             return {"type": "speech_end", "t": now, "end_t": t, "turn_id": ev.get("turnId")}
         if kind == "speechComplete":

@@ -16,6 +16,7 @@ from server import llm
 from server.audio_router import AudioRouter
 from server.bot.booking_bot import BookingBot, BookingStore
 from server.runlog import RUNS, RunLog, new_session_id
+from server.turn_controller import TurnController
 
 Send = Callable[[dict], Awaitable[None]]
 
@@ -42,6 +43,12 @@ class Session:
         self._tasks: list[asyncio.Task] = []
         self._stopped = False
         self.turn_count = 0
+        engine = start.get("engine") or {}
+        self.controller = TurnController(
+            max_wait_ms=int(start.get("max_wait_ms") or 6000),
+            use_checker=bool(engine.get("spark_check", False)),
+        )
+        self._logged_decisions = 0
 
     @property
     def now(self) -> float:
@@ -61,8 +68,11 @@ class Session:
             pass
 
     async def audio(self, pcm: bytes) -> None:
-        if not self._stopped:
-            await self.router.feed(pcm)
+        if self._stopped:
+            return
+        await self.router.feed(pcm)
+        if self.mode == "unhurried":
+            await self.act(self.controller.tick(self.now))
 
     async def on_event(self, ev: dict) -> None:
         self.log.write("events", {"dir": "in", **ev})
@@ -71,8 +81,37 @@ class Session:
             self.last_speech_end = ev["end_t"]
         if kind in ("partial", "speech_end", "speech_start", "error"):
             await self.emit(ev)
-        if kind == "model_turn" and self.mode == "baseline" and ev["text"]:
-            await self.dispatch_turn(ev["text"], ev["text"], reason="model_end")
+        if self.mode == "baseline":
+            if kind == "model_turn" and ev["text"]:
+                await self.dispatch_turn(ev["text"], ev["text"], reason="model_end")
+            return
+        c, now = self.controller, self.now
+        if kind == "partial":
+            acts = c.on_partial(ev["text"], now)
+        elif kind == "speech_start":
+            acts = c.on_speech_start(now, ev.get("start_t"))
+        elif kind == "speech_end":
+            acts = c.on_pause(ev["end_t"], now)
+        elif kind == "model_turn":
+            acts = c.on_model_turn(ev["text"], now)
+            await self.emit({"type": "model_text", "text": c.text, "t": now})
+        else:
+            acts = []
+        await self.act(acts)
+
+    async def act(self, acts: list[dict]) -> None:
+        """Carry out turn-controller actions and write new decision log rows."""
+        for row in self.controller.decisions[self._logged_decisions:]:
+            self.log.write("decisions", row)
+        self._logged_decisions = len(self.controller.decisions)
+        for a in acts:
+            if a["do"] == "hold":
+                await self.emit({"type": "hold", "reason": a["reason"],
+                                 "max_wait_ms": a["max_wait_ms"], "t": self.now})
+            elif a["do"] == "resume":
+                await self.emit({"type": "resume", "t": self.now})
+            elif a["do"] == "send":
+                await self.dispatch_turn(a["text"], a["text"], reason=a["reason"])
 
     async def dispatch_turn(self, raw: str, clean: str, *, reason: str, **extra) -> None:
         """Send one finished user turn to the bot."""
@@ -102,6 +141,11 @@ class Session:
 
     async def command(self, cmd: dict) -> None:
         self.log.write("events", {"dir": "cmd", **cmd})
+        if cmd.get("type") == "text" and cmd.get("text", "").strip():
+            if self.mode == "unhurried":
+                await self.act(self.controller.on_typed(cmd["text"], self.now))
+            else:
+                await self.dispatch_turn(cmd["text"], cmd["text"], reason="typed")
 
     async def stop(self) -> None:
         if self._stopped:

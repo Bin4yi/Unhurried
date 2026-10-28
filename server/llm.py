@@ -169,6 +169,11 @@ class TranscribeStream:
         self._opened = time.monotonic()
         self._ws = await websockets.connect(realtime_url(base_url()), max_size=None)
         await self._ws.send(json.dumps(self.handshake(api_key())))
+        # Wait for the session ack so "ready" means the server is listening.
+        ack = json.loads(await asyncio.wait_for(self._ws.recv(), 10))
+        if "sessionId" not in ack:
+            raise RuntimeError(f"transcribe handshake failed: {ack}")
+        self.session_id = ack["sessionId"]
 
     async def send(self, pcm: bytes) -> None:
         self.audio_seconds += len(pcm) / (self.rate * 2)
