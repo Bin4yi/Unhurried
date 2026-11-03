@@ -6,6 +6,8 @@ Unhurried sits between a person and any voice bot. It decides when the person ha
 
 Built for the Meta Global AI Developer Hackathon (Indie track, Theme 1 "Build for Your World").
 
+Full description of everything built so far: [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md).
+
 ## The problem
 
 Voice AI is built for fluent speech. A stammer block is often a silent pause, and voice bots treat silence as "finished". They reply in the middle of a sentence. Repeated sounds ("b-b-book") confuse them, so they mishear the request. Knowing the bot will cut in adds pressure, and many people stop using voice.
