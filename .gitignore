@@ -23,3 +23,7 @@ studio_data/
 # Video work (large, local only)
 brag-output/
 video_build/
+HANDOFF.md
+
+# My own voice recordings stay private
+bench/audio/real_self/

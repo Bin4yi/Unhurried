@@ -83,7 +83,7 @@ Two sets, never mixed. Every number below comes from a file in `bench/results/`.
 
 ### Real: my own voice (`real_self`)
 
-Run on Nov 5, 2026 ([results file](bench/results/20261105_000043_real_self.json)). 15 recordings of my own spontaneous speech, recorded live in Voice Studio. Free talk, so "understood" is not scored.
+Run on Nov 5, 2026 ([results file](bench/results/20261105_000043_real_self.json)). 15 recordings of my own spontaneous speech, recorded live in Voice Studio. Free talk, so "understood" is not scored. The recordings themselves stay private, so this set cannot be re-run from the repo; the synthetic set can.
 
 | Turn engine | Cut-offs (recordings) | Replies while still talking | Early end-of-speech | Invented content (turns) |
 | --- | --- | --- | --- | --- |
@@ -122,7 +122,7 @@ Honest limit: the word list is sent to Voice Transcribe during a session for key
 - **Not a speech coach or a medical tool.** Unhurried changes how the AI listens. It never scores, rates or tracks a person's speech, and never gives speaking tips.
 - **Measure only the AI:** cut-offs, understanding, added delay, invented content.
 - **Privacy:** live audio is not stored. Voice Studio keeps a recording on the local machine until the person deletes it.
-- **Consent:** only the builder's own voice and synthetic voices are public. Volunteers' audio stays private ([form](docs/consent_form.md)).
+- **Consent:** the builder's real recordings are not published in this repo, only their counts; the public clips are synthetic voices. Volunteers' audio stays private ([form](docs/consent_form.md)).
 - **No SEP-28k:** its non-commercial license conflicts with the hackathon's submission terms.
 
 ## Honest limits

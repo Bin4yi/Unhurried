@@ -1,0 +1,36 @@
+# Real session.
+#   think | a situation: answer in your own words, deciding as you speak | expected
+#   read  | a short line to read out                                       | expected
+# expected: "ask" = book_table, you type in what you asked for after recording;
+# "people time day" for read lines (time 24h, day lowercase, tonight = today);
+# "list_bookings"; or "none" (a question: the bot must not book or cancel anything).
+think | Book a table for your family this weekend. Decide how many people, the day and the time as you speak. | ask
+think | Book a birthday dinner for a friend. Say who it is for, how many people, and when. | ask
+think | Your project team wants to eat together after a long day. Ask for a table that suits everyone. | ask
+think | Book lunch for you and your parents on a day that suits them, and say why that day. | ask
+think | Book a table for a quiet dinner for two. Say the day and time you prefer, and why. | ask
+think | Book a table for an evening after your lectures this week. | ask
+think | Book a table to celebrate finishing the hackathon. Say who is coming and when. | ask
+think | Ask for a table, then change the number of people while you are speaking. | ask
+think | Your cousins are visiting from Matara. Book a table for all of you. | ask
+think | Book a table for a lunch meeting with a lecturer or a client. | ask
+think | Book a Sunday family lunch. Explain who is coming. | ask
+think | Book a table just for yourself on a quiet evening. | ask
+think | Book a farewell dinner for a friend who is moving away. | ask
+think | Book a table for your study group before an exam. | ask
+think | Book a table for your parents' anniversary. Say the day and the time. | ask
+think | Book a table for a group of friends on a Friday night. | ask
+think | Book a table for your sports team after practice. | ask
+think | Book a table for a family dinner, but you are not sure about the time at first. | ask
+think | Ask what your current bookings are, and say why you want to know. | list_bookings
+think | Ask when the restaurant closes tonight and whether you can still come. | none
+read | Book a table for two at eight on Saturday | 2 20:00 saturday
+read | What are my bookings | list_bookings
+read | Book a table for four at seven tomorrow | 4 19:00 tomorrow
+read | What time do you open on Sunday | none
+read | Book a table for three at six on Friday | 3 18:00 friday
+read | I need a table for two at nine on Monday | 2 21:00 monday
+read | Book a table for five at noon on Thursday | 5 12:00 thursday
+read | Book a table for one at eight tonight | 1 20:00 today
+read | Book a table for six at seven on Wednesday | 6 19:00 wednesday
+read | Book a table for two at half past eight on Tuesday | 2 20:30 tuesday

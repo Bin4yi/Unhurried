@@ -63,7 +63,7 @@ def main() -> int:
         shutil.copyfile(d.parent / "original.wav", dst)
         row = {"id": cid, "set": "real_self", "file": f"bench/audio/real_self/{cid}.wav", "kind": "talk",
                "features": [], "speech_end_s": speech_end(dst), "expected": {}, "bot": "assistant",
-               "script": (job.get("transcript") or "")[:300], "consent": "self", "public_audio": True,
+               "script": (job.get("transcript") or "")[:300], "consent": "self", "public_audio": False,
                "mode": "free_talk", "source_job": job["id"]}
         rows.append(row)
         added.append(row)

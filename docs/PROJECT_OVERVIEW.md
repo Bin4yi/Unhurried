@@ -197,7 +197,7 @@ Tools: `bench/record.html` (record and label clips; volunteer audio always stays
 - Not a speech coach or a medical tool. Unhurried never scores, rates or tracks speech and never gives speaking tips.
 - Live audio is not stored. Only text is kept, and it can be deleted.
 - Voice Studio keeps a recording on the local machine until the person deletes it (one button).
-- Benchmark clips need written consent ([form](consent_form.md)). Only the builder's own voice and synthetic voices are public; volunteers' audio stays private and only their counts are published, because the hackathon rules give the organizers broad rights to the submission.
+- Benchmark clips need written consent ([form](consent_form.md)). The builder's real recordings are not published, only their counts; the public clips are synthetic voices. Volunteers' audio also stays private and only their counts are published, because the hackathon rules give the organizers broad rights to the submission.
 - SEP-28k is not used: its non-commercial licence conflicts with the submission terms.
 - Privacy page: [`web/privacy.html`](../web/privacy.html).
 

@@ -11,7 +11,9 @@ The video is a **screen recording of the real app**, with my voice explaining it
 - Total length: **3:00 or less**.
 - Every number on screen comes from a file in `bench/results/`.
 
-## Shot list (3:00)
+## Shot list (3:00 or less)
+
+Intro (12 s) and end card (9 s) leave **2:39 for shots 01–08**. The times below are a guide; `build_video.py` prints the real length.
 
 | # | Time | Shot (real app, `?demo=1` on every page) | What I say (short) |
 | --- | --- | --- | --- |
@@ -21,9 +23,10 @@ The video is a **screen recording of the real app**, with my voice explaining it
 | 03 | 0:57–1:17 | Inspector: reason card ("ended on 'for'"), the three signals (words, voice score, Spark answer + time), session stats. | "Every pause is decided by code first: words, then my own audio check, then Muse Spark only if unsure." |
 | 04 | 1:17–1:42 | Booking assistant: clean text with change chips, "show what I said", "two, no, three people", the **confirm gate** (Yes / Change). Type any time (2x). | "It only removes, never adds. A code guard checks every name, number and time." |
 | 05 | 1:42–2:22 | `voice-studio.html?demo=1`: my recording, cut list with evidence, turn one cut off, make the clean version; then `voice-over.html?demo=1`: Voice editing **Off**, then **On**. AI voice: live sentence check and "AI voice (watermarked)" label (2x). | "Muse Spark 1.2 listens for stammers. Meta's wav2vec 2.0 and my own aligner prove where each one is. I approve every cut." |
-| 06 | 2:22–2:42 | `bench/results.html?demo=1`: Real (my voice) table. Baseline vs default engine cut-offs, invented content, delay. 2 s of the benchmark running in the terminal (4x). | "Measured on my own voice: X → Z. Zero invented words." |
+| 06 | 2:22–2:42 | `bench/results.html?demo=1`: Real (my voice) table. Baseline vs default engine cut-offs, invented content, delay. 2 s of the benchmark running in the terminal (4x). | "Measured on my own voice: 14 → 2 replies while I was still talking. Zero invented words." |
 | 07 | 2:42–2:52 | Voice Passport: lock, then unlock. Learner: one suggestion with its reason, I approve it (2x). | "My settings are encrypted in the browser. The learner only suggests; I decide." |
-| 08 | 2:52–3:02 | End card: Meta models used, repo link, "Unhurried teaches machines to wait." | (same line) |
+| 08 | optional | A very short closing shot, only if there is time. The end card follows. | "Unhurried. Teaching machines to wait." |
+| End | last 9 s | End card: Meta models used, repo link, "Unhurried teaches machines to wait." | – |
 
 Files: `video_build/shots/01.mp4` … `08.mp4` (OBS, 1080p, 30 fps). The intro and end cards are rendered into `video_build/cards/`.
 

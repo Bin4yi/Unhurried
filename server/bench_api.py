@@ -1,6 +1,6 @@
 """Benchmark clip recording endpoints (used by bench/record.html).
 
-Real-session clips (own voice, set "real_self") go to bench/audio/real_self/.
+Real-session clips (own voice, set "real_self") go to bench/audio/real_self/ (git-ignored).
 Other public clips (own voice, public_audio=true) go to bench/audio/.
 Everything else goes to bench/audio_private/ (git-ignored, never published).
 """
@@ -90,7 +90,7 @@ def build_clip(meta: dict, clip_id: str, duration: float) -> dict:
         raise HTTPException(400, "real_self clips must be your own voice")
     if consent == "volunteer":
         clip_set = "volunteer"
-    folder = ("audio/real_self" if clip_set == "real_self" and public
+    folder = ("audio/real_self" if clip_set == "real_self"
               else "audio" if public else "audio_private")
     return {
         "id": clip_id, "set": clip_set, "file": f"bench/{folder}/{clip_id}.wav", "kind": kind,

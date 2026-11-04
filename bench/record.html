@@ -4,42 +4,86 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Record Clips</title>
-  <link rel="stylesheet" href="/web/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/web/studio.css">
   <style>
-    canvas { width: 100%; height: 120px; border-radius: 10px; background: var(--bg); cursor: crosshair; display: block; }
-    fieldset { border: 1px solid var(--line); border-radius: 10px; margin: 0 0 12px; }
-    label { margin-right: 12px; }
-    .script { font-size: 1.3rem; }
+    main { max-width: 980px; margin: 0 auto; padding: 8px 24px 48px; display: grid; gap: 18px; }
+    .panel { padding: 22px 26px; }
+    .line-text { font: 400 clamp(30px, 4vw, 46px)/1.2 var(--serif); letter-spacing: -.015em; margin: 8px 0 4px; }
+    .meta-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; color: var(--ink-2); }
+    .pill { font: 600 11px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; padding: 6px 10px; border-radius: 99px; background: var(--paper-2); }
+    .pill.stammer { background: var(--clay-soft); color: var(--clay); }
+    .pill.done { background: var(--sage-soft); color: var(--sage); }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .btn.rec-on { background: var(--clay); color: #fff; border-color: var(--clay); }
+    canvas { width: 100%; height: 130px; display: block; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); cursor: crosshair; }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .grid label { font-size: 13px; color: var(--ink-3); display: grid; gap: 4px; }
+    .grid input, .grid select { border: 1px solid var(--line); background: var(--paper); border-radius: 10px; padding: 8px 10px; }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr 1fr; } }
+    fieldset { border: 1px solid var(--line); border-radius: 12px; margin: 12px 0 0; padding: 10px 14px; }
+    fieldset label { margin-right: 14px; font-size: 14px; }
+    .keys { color: var(--ink-3); font-size: 13px; }
+    kbd { font: 600 12px/1 var(--sans); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 2px 6px; background: var(--card); }
+    .bar { height: 6px; border-radius: 99px; background: var(--paper-2); overflow: hidden; margin-top: 10px; }
+    .bar i { display: block; height: 100%; background: var(--sage); width: 0; transition: width .3s; }
   </style>
 </head>
 <body>
+<header class="top">
+  <h1 class="mark">unhurried<span>.</span></h1>
+  <span class="tag">Record clips</span>
+  <div class="spacer"></div>
+  <span class="muted" id="progress-text"></span>
+</header>
 <main>
-  <h1>Record benchmark clips</h1>
-  <p class="sub">Read the line, then click on the waveform where your speech really ended.</p>
-
-  <section class="card">
-    <p class="muted">Line <span id="line-n">1</span> of <span id="line-total">0</span></p>
-    <p id="script" class="script"></p>
-    <div class="row">
-      <button id="prev">Previous line</button>
-      <button id="next">Next line</button>
-      <button id="rec" class="primary">Record</button>
-      <button id="stop" disabled>Stop</button>
-      <button id="play" disabled>Play</button>
+  <section class="card panel" aria-labelledby="line-label">
+    <div class="meta-row">
+      <span id="line-label" class="eyebrow" style="margin:0">Line <span id="n">1</span> of <span id="total">0</span></span>
+      <span class="pill" id="mode-pill"></span>
+      <span class="pill" id="kind-pill"></span>
+      <span class="pill done" id="done-pill" hidden>saved</span>
     </div>
+    <p class="line-text" id="line"></p>
+    <p class="muted" id="how"></p>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="controls">
+      <button class="btn solid" id="rec">Record</button>
+      <button class="btn" id="redo" disabled>Re-record</button>
+      <button class="btn" id="play" disabled>Play</button>
+      <button class="btn solid" id="save" disabled>Save and next</button>
+      <button class="btn" id="prev">Back</button>
+      <button class="btn" id="next">Skip</button>
+      <button class="btn" id="undo" hidden>Undo last save</button>
+    </div>
+    <p class="keys" style="margin-top:12px"><kbd>Space</kbd> record / stop · <kbd>R</kbd> re-record · <kbd>P</kbd> play · <kbd>Enter</kbd> save and next · <kbd>←</kbd> <kbd>→</kbd> lines</p>
   </section>
 
-  <section class="card">
-    <canvas id="wave" width="1200" height="240" aria-label="Waveform. Click to mark the end of speech."></canvas>
-    <p class="muted">Speech ends at: <strong id="end">not set</strong></p>
+  <section class="card panel" aria-labelledby="wave-label">
+    <h2 id="wave-label" class="eyebrow">Where did your speech really end?</h2>
+    <canvas id="wave" width="1400" height="260" aria-label="Waveform. Click where your speech ended."></canvas>
+    <p class="muted">Speech ends at <strong id="end">–</strong>. The marker is a guess from the sound level; click the waveform to move it.</p>
   </section>
 
-  <section class="card">
-    <fieldset><legend>Kind</legend>
-      <label><input type="radio" name="kind" value="stammer" checked> stammer</label>
+  <section class="card panel" aria-labelledby="label-label">
+    <h2 id="label-label" class="eyebrow">What you asked for</h2>
+    <p class="muted" id="ask-hint" hidden>Type in the people, time and day you asked for. If you changed your mind while speaking, use your final choice.</p>
+    <div class="grid">
+      <label>Expected action
+        <select id="tool"><option value="book_table">book_table</option><option value="list_bookings">list_bookings</option><option value="">none</option></select></label>
+      <label>People<input id="people" inputmode="numeric"></label>
+      <label>Time (24h)<input id="time" placeholder="19:00"></label>
+      <label>Day<select id="day"><option value=""></option><option>today</option><option>tomorrow</option>
+        <option>monday</option><option>tuesday</option><option>wednesday</option><option>thursday</option>
+        <option>friday</option><option>saturday</option><option>sunday</option></select></label>
+    </div>
+    <fieldset><legend class="muted">Kind</legend>
+      <label><input type="radio" name="kind" value="stammer"> stammer</label>
       <label><input type="radio" name="kind" value="fluent"> fluent</label>
     </fieldset>
-    <fieldset><legend>Features</legend>
+    <fieldset><legend class="muted">What happened (optional)</legend>
       <label><input type="checkbox" name="feat" value="silent_block"> silent block</label>
       <label><input type="checkbox" name="feat" value="repeat_sound"> repeated sound</label>
       <label><input type="checkbox" name="feat" value="repeat_word"> repeated word</label>
@@ -47,53 +91,83 @@
       <label><input type="checkbox" name="feat" value="word_switch"> word switch</label>
       <label><input type="checkbox" name="feat" value="filler"> filler</label>
     </fieldset>
-    <fieldset><legend>Expected bot action</legend>
-      <div class="row">
-        <select id="tool"><option>book_table</option><option>cancel_booking</option><option>list_bookings</option><option value="">none</option></select>
-        <input id="people" type="text" placeholder="people (2)" size="6">
-        <input id="time" type="text" placeholder="time (19:00)" size="8">
-        <input id="day" type="text" placeholder="day (Friday)" size="10">
-      </div>
-    </fieldset>
-    <fieldset><legend>Consent</legend>
-      <label><input type="radio" name="consent" value="self" checked> my own voice</label>
-      <label><input type="radio" name="consent" value="volunteer"> volunteer (written consent)</label>
-      <label><input type="checkbox" id="public"> audio may be public (own voice only)</label>
-    </fieldset>
-    <div class="row">
-      <button id="save" class="primary" disabled>Save clip</button>
-      <span id="msg" class="status" role="status"></span>
-    </div>
+    <p class="muted" style="margin-top:12px">Saved as set <strong>real_self</strong>, your own voice, private: stays on this computer, not in git.</p>
+    <p id="msg" class="status" role="status"></p>
   </section>
 </main>
 <script type="module">
 import { RATE, startMic } from "/web/mic.js";
 const $ = (id) => document.getElementById(id);
-let lines = [], idx = 0, chunks = [], stopMic = null, samples = null, endS = null;
+let lines = [], saved = {}, idx = 0, chunks = [], stopMic = null, samples = null, endS = null, lastSaved = null;
+
+const savedKey = (text) => text.trim().toLowerCase();
+
+function css(n) { return getComputedStyle(document.body).getPropertyValue(n).trim(); }
 
 function showLine() {
-  $("script").textContent = lines[idx] || "(add lines to bench/scripts.txt)";
-  $("line-n").textContent = idx + 1;
-  $("line-total").textContent = lines.length;
+  const l = lines[idx];
+  if (!l) return;
+  $("n").textContent = idx + 1;
+  $("total").textContent = lines.length;
+  $("line").textContent = l.text;
+  $("mode-pill").textContent = l.mode === "think" ? "think and ask" : "read";
+  $("how").textContent = l.mode === "think"
+    ? "Answer in your own words. Decide the details as you speak. Take all the time you need, then press Stop."
+    : "Read it out as it comes.";
+  $("ask-hint").hidden = !(l.mode === "think" && l.expected?.tool === "book_table");
+  $("kind-pill").textContent = l.kind;
+  $("kind-pill").className = `pill ${l.kind}`;
+  $("done-pill").hidden = !saved[savedKey(l.text)];
+  document.querySelector(`input[name=kind][value=${l.kind}]`).checked = true;
+  document.querySelectorAll("input[name=feat]").forEach((c) => (c.checked = false));
+  const e = l.expected || {};
+  $("tool").value = e.tool || "";
+  $("people").value = e.args?.people ?? "";
+  $("time").value = e.args?.time ?? "";
+  $("day").value = e.args?.day ?? "";
+  clearTake();
+  const n = Object.keys(saved).length;
+  $("progress-text").textContent = `${n} of ${lines.length} saved`;
+  $("bar").style.width = `${(100 * n) / Math.max(1, lines.length)}%`;
+}
+
+function clearTake() {
+  samples = null; endS = null; chunks = [];
+  $("end").textContent = "–";
+  $("save").disabled = $("play").disabled = $("redo").disabled = true;
+  draw();
 }
 
 function draw() {
   const c = $("wave"), g = c.getContext("2d");
   g.clearRect(0, 0, c.width, c.height);
   if (!samples) return;
-  const css = getComputedStyle(document.body);
-  g.fillStyle = css.getPropertyValue("--accent");
   const step = Math.max(1, Math.floor(samples.length / c.width));
+  g.fillStyle = css("--ink-2");
   for (let x = 0; x < c.width; x++) {
     let peak = 0;
     for (let i = x * step; i < (x + 1) * step && i < samples.length; i++) peak = Math.max(peak, Math.abs(samples[i]));
-    const h = (peak / 32768) * c.height;
-    g.fillRect(x, (c.height - h) / 2, 1, Math.max(1, h));
+    const h = Math.max(1, (peak / 32768) * c.height * 0.92);
+    g.fillRect(x, (c.height - h) / 2, 1, h);
   }
   if (endS != null) {
-    g.fillStyle = css.getPropertyValue("--warn");
-    g.fillRect((endS * RATE / samples.length) * c.width, 0, 3, c.height);
+    g.fillStyle = css("--clay");
+    g.fillRect((endS * RATE / samples.length) * c.width - 1, 0, 3, c.height);
   }
+}
+
+function guessEnd(s) {
+  // last 20 ms frame clearly above the room level, plus a little tail
+  const hop = Math.round(RATE * 0.02), rms = [];
+  for (let i = 0; i + hop <= s.length; i += hop) {
+    let sum = 0;
+    for (let j = i; j < i + hop; j++) sum += s[j] * s[j];
+    rms.push(Math.sqrt(sum / hop));
+  }
+  const floor = [...rms].sort((a, b) => a - b)[Math.floor(rms.length * 0.1)] || 0;
+  const thr = Math.max(400, floor * 4);
+  for (let k = rms.length - 1; k >= 0; k--) if (rms[k] > thr) return Math.min(s.length / RATE, (k + 1) * 0.02 + 0.05);
+  return s.length / RATE;
 }
 
 function wavBytes(int16) {
@@ -107,54 +181,97 @@ function wavBytes(int16) {
   return buf;
 }
 
-$("rec").onclick = async () => {
-  chunks = []; samples = null; endS = null; $("end").textContent = "not set"; draw();
+async function toggleRecord() {
+  if (stopMic) {
+    stopMic(); stopMic = null;
+    $("rec").textContent = "Record"; $("rec").classList.remove("rec-on");
+    samples = new Int16Array(chunks.reduce((n, c) => n + c.length, 0));
+    let o = 0; for (const c of chunks) { samples.set(c, o); o += c.length; }
+    endS = guessEnd(samples);
+    $("end").textContent = `${endS.toFixed(2)} s`;
+    $("save").disabled = $("play").disabled = $("redo").disabled = false;
+    draw();
+    return;
+  }
+  clearTake();
+  $("msg").textContent = "";
   stopMic = await startMic((c) => chunks.push(new Int16Array(c)));
-  $("rec").disabled = true; $("stop").disabled = false; $("save").disabled = true;
-};
-$("stop").onclick = () => {
-  stopMic(); stopMic = null;
-  samples = new Int16Array(chunks.reduce((n, c) => n + c.length, 0));
-  let o = 0; for (const c of chunks) { samples.set(c, o); o += c.length; }
-  $("rec").disabled = false; $("stop").disabled = true; $("play").disabled = false;
-  draw();
-};
-$("play").onclick = () => {
-  const url = URL.createObjectURL(new Blob([wavBytes(samples)], { type: "audio/wav" }));
-  new Audio(url).play();
-};
-$("wave").onclick = (e) => {
-  if (!samples) return;
-  const r = e.target.getBoundingClientRect();
-  endS = ((e.clientX - r.left) / r.width) * samples.length / RATE;
-  $("end").textContent = endS.toFixed(2) + " s";
-  $("save").disabled = false;
-  draw();
-};
-$("prev").onclick = () => { idx = Math.max(0, idx - 1); showLine(); };
-$("next").onclick = () => { idx = Math.min(lines.length - 1, idx + 1); showLine(); };
-$("save").onclick = async () => {
-  const tool = $("tool").value, args = {};
-  if ($("people").value) args.people = Number($("people").value);
-  if ($("time").value) args.time = $("time").value;
-  if ($("day").value) args.day = $("day").value;
+  $("rec").textContent = "Stop"; $("rec").classList.add("rec-on");
+}
+
+async function save() {
+  if (!samples || endS == null) return;
+  const l = lines[idx], tool = $("tool").value, args = {};
+  if (tool === "book_table") {
+    args.people = Number($("people").value);
+    args.time = $("time").value.trim();
+    args.day = $("day").value.trim().toLowerCase();
+    if (!(args.people > 0) || !/^\d{1,2}:\d{2}$/.test(args.time) || !args.day) {
+      $("msg").textContent = "Type in the people, the time (like 19:30) and the day you asked for, then save.";
+      $("people").focus();
+      return;
+    }
+  }
   const meta = {
+    set: "real_self", consent: "self", public_audio: false, mode: l.mode,
     kind: document.querySelector("input[name=kind]:checked").value,
     features: [...document.querySelectorAll("input[name=feat]:checked")].map((x) => x.value),
-    speech_end_s: endS, expected: tool ? { tool, args } : {},
-    consent: document.querySelector("input[name=consent]:checked").value,
-    public_audio: $("public").checked, script: lines[idx] || "",
+    speech_end_s: endS, expected: tool ? { tool, args } : {}, script: l.text,
   };
   const fd = new FormData();
   fd.append("audio", new Blob([wavBytes(samples)], { type: "audio/wav" }), "clip.wav");
   fd.append("meta", JSON.stringify(meta));
+  $("save").disabled = true;
   const r = await fetch("/bench/clip", { method: "POST", body: fd });
   const out = await r.json();
-  $("msg").textContent = r.ok ? `Saved ${out.id} (${out.public_audio ? "public" : "private"})` : `Error: ${out.detail}`;
-  if (r.ok) { $("save").disabled = true; idx = Math.min(lines.length - 1, idx + 1); showLine(); }
-};
+  if (!r.ok) { $("msg").textContent = `Not saved: ${out.detail}`; $("save").disabled = false; return; }
+  if (saved[savedKey(l.text)]) await fetch(`/bench/clip/${saved[savedKey(l.text)]}`, { method: "DELETE" });
+  saved[savedKey(l.text)] = out.id;
+  lastSaved = { id: out.id, key: savedKey(l.text), idx };
+  $("undo").hidden = false;
+  $("msg").textContent = `Saved ${out.id}.`;
+  idx = Math.min(lines.length - 1, idx + 1);
+  showLine();
+}
 
-lines = await (await fetch("/bench/scripts")).json();
+async function undo() {
+  if (!lastSaved) return;
+  await fetch(`/bench/clip/${lastSaved.id}`, { method: "DELETE" });
+  delete saved[lastSaved.key];
+  idx = lastSaved.idx;
+  $("msg").textContent = `Removed ${lastSaved.id}. Record this line again.`;
+  lastSaved = null;
+  $("undo").hidden = true;
+  showLine();
+}
+
+$("rec").onclick = toggleRecord;
+$("redo").onclick = () => { clearTake(); toggleRecord(); };
+$("play").onclick = () => new Audio(URL.createObjectURL(new Blob([wavBytes(samples)], { type: "audio/wav" }))).play();
+$("save").onclick = save;
+$("undo").onclick = undo;
+$("prev").onclick = () => { idx = Math.max(0, idx - 1); showLine(); };
+$("next").onclick = () => { idx = Math.min(lines.length - 1, idx + 1); showLine(); };
+$("wave").onclick = (e) => {
+  if (!samples) return;
+  const r = e.target.getBoundingClientRect();
+  endS = ((e.clientX - r.left) / r.width) * samples.length / RATE;
+  $("end").textContent = `${endS.toFixed(2)} s`;
+  draw();
+};
+document.addEventListener("keydown", (e) => {
+  if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
+  if (e.code === "Space") { e.preventDefault(); toggleRecord(); }
+  else if (e.key === "Enter") { e.preventDefault(); save(); }
+  else if (e.key === "r" || e.key === "R") { if (!stopMic) { clearTake(); toggleRecord(); } }
+  else if (e.key === "p" || e.key === "P") { if (samples) $("play").click(); }
+  else if (e.key === "ArrowRight") $("next").click();
+  else if (e.key === "ArrowLeft") $("prev").click();
+});
+
+lines = await (await fetch("/bench/scripts?set=real_self")).json();
+for (const c of await (await fetch("/bench/clips")).json()) if (c.set === "real_self") saved[savedKey(c.script || "")] = c.id;
+idx = Math.max(0, lines.findIndex((l) => !saved[savedKey(l.text)]));
 showLine();
 </script>
 </body>
