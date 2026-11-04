@@ -1,4 +1,5 @@
 // Voice-over player: one switch between your original and the clean version, kept in sync.
+import { demoLabel } from "./demo-mode.js";
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 if (params.get("demo") === "1") document.body.classList.add("demo");
@@ -122,6 +123,8 @@ function renderCuts() {
 // ---- playback ---------------------------------------------------------------
 function setEditing(on) {
   if (!job || on === editing) return;
+  demoLabel(on ? "Voice editing ON · my real voice, stammers cut (only cuts, nothing added)"
+               : "Voice editing OFF · exactly what I said");
   const t = originalNow();
   const wasPlaying = playing;
   active().pause();

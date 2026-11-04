@@ -235,9 +235,9 @@ Tools: `bench/record.html` (record and label clips; volunteer audio always stays
 
 ## 16. How to run
 
-```sh
+```powershell
 python -m pip install -r requirements.txt
-cp .env.example .env              # add META_API_KEY
+Copy-Item .env.example .env       # then add META_API_KEY
 python -m uvicorn server.main:app --port 8000
 ```
 

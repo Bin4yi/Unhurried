@@ -68,7 +68,9 @@ class Session:
         uid = str(start.get("user_id") or "u1")
         self.profile = TimingProfile(user_id=uid) if self.bench else TimingProfile.load(uid)
         max_wait = int(start.get("max_wait_ms") or self.profile.max_wait_ms)
-        engine_cfg = {"spark_check": True, "rebuild_spark": True, **(start.get("engine") or {})}
+        # Default engine: words + voice + Spark (Spark only breaks ties, at most 700 ms).
+        engine_cfg = {"spark_check": True, "sound": True, "rebuild_spark": True,
+                      **(start.get("engine") or {})}
         self.engine_cfg = engine_cfg
         self.switches = [s for s in (start.get("switches") or []) if isinstance(s, dict)]
         self.controller = TurnController(

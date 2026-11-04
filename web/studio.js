@@ -1,5 +1,6 @@
 // Unhurried Studio: talk to the booking assistant and see every turn decision.
 import { startMic } from "./mic.js";
+import { demoLabel } from "./demo-mode.js";
 import { onResume, renderStats, resetInspector, sendLabel, showDecision, stats } from "./studio-inspector.js";
 
 const $ = (id) => document.getElementById(id);
@@ -92,6 +93,23 @@ function addLine(list, who, text, extra = {}) {
   line.scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
+// ---------------------------------------------------------------- demo labels
+function decisionLabel(d) {
+  const last = (d.last_words || []).slice(-1)[0] || "";
+  const sp = d.spark_check;
+  if (d.decision === "hold") {
+    const why = d.reason === "linking_word" ? `sentence ended on '${last}'`
+      : d.reason === "voice_in_pause" ? "your voice is still active" : (d.reason || "").replace(/_/g, " ");
+    return `Turn engine · holding: ${why} · words + voice`;
+  }
+  if (d.decision === "check") return "Completeness check · Muse Spark 1.3 · asking (at most 700 ms)";
+  if (d.decision === "send" && d.reason === "words_sound") return "Turn engine · sent: words and voice agree · no model call";
+  if (d.decision === "send" && sp && sp.ms) return `Completeness check · Muse Spark 1.3 · ${sp.ms} ms`;
+  if (d.decision === "send" && d.reason === "spark_late") return "Turn engine · sent: Spark over 700 ms, decided by words + voice";
+  if (d.decision === "send") return `Turn engine · sent (${(d.reason || "").replace(/_/g, " ")})`;
+  return "Turn engine · listening";
+}
+
 // ---------------------------------------------------------------- sessions
 function onMain(ev) {
   window.dispatchEvent(new CustomEvent("unhurried-event", { detail: ev }));
@@ -100,8 +118,11 @@ function onMain(ev) {
     case "model_text": main.done = ev.text; caption(ev.text, ""); break;
     case "hold": held(true); break;
     case "sending": held(false); break;
-    case "resume": onResume(ev.t, ev.pause_ms); break;
-    case "decision": showDecision(ev); break;
+    case "resume":
+      onResume(ev.t, ev.pause_ms);
+      demoLabel("Turn engine · you went on: a normal bot would have cut in here");
+      break;
+    case "decision": showDecision(ev); demoLabel(decisionLabel(ev)); break;
     case "turn":
       mainOpen = false; main.done = "";
       caption("", "");
@@ -109,9 +130,14 @@ function onMain(ev) {
       stats.fixes += (ev.changes || []).length;
       renderStats();
       addLine("lines", "you", ev.clean, { raw: ev.raw, changes: ev.changes, reason: mode === "baseline" ? null : ev.reason });
+      if (mode !== "baseline") {
+        const by = ev.spark && !ev.spark.error ? "Muse Spark 1.3 + code" : "code";
+        demoLabel(`Meaning rebuild · ${by} · guard: ${ev.needs_confirm ? "asked you to confirm" : "passed"} · ${(ev.changes || []).length} repairs`);
+      }
       break;
     case "bot": addLine("lines", "bot", ev.text); speak(ev.text); break;
     case "confirm":
+      demoLabel("Confirm gate · nothing is booked until you say yes");
       $("confirm-text").textContent = ev.text;
       $("confirm").dataset.action = ev.action_id;
       $("confirm").classList.add("on");
@@ -228,7 +254,7 @@ $("close-settings").onclick = () => $("settings").close();
 $("settings").addEventListener("click", (e) => { if (e.target === $("settings")) $("settings").close(); });
 try {
   $("words").value = localStorage.getItem("unhurried.words") || "";
-  $("engine").value = localStorage.getItem("unhurried.engine") || "words_spark";
+  $("engine").value = localStorage.getItem("unhurried.engine") || "words_sound_spark";
   $("bot").value = localStorage.getItem("unhurried.bot") || "assistant";
 } catch {}
 $("words").addEventListener("change", () => { try { localStorage.setItem("unhurried.words", $("words").value); } catch {} });

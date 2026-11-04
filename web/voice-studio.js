@@ -1,5 +1,6 @@
 // Voice Studio: record, review cuts, real-voice output, optional AI voice.
 import { RATE, startMic } from "./mic.js";
+import { demoLabel } from "./demo-mode.js";
 
 const $ = (id) => document.getElementById(id);
 let job = null, stopMic = null, chunks = [], recording = false, origBuf = null;
@@ -76,6 +77,7 @@ async function toggleRecord() {
 }
 
 async function process(blob, source) {
+  demoLabel("Listening for stammers · Muse Spark 1.2 audio + wav2vec 2.0 alignment");
   const steps = [...$("progress").children];
   $("progress").hidden = false;
   steps.forEach((s) => (s.className = ""));
@@ -118,6 +120,8 @@ async function decodeOriginal() {
 const KIND = { sound: "sound", repeat: "repeat", filler: "filler", correction: "correction", block: "pause", manual: "yours" };
 
 function showReview() {
+  const n = job.edits.filter((e) => e.on && e.kind !== "block").length;
+  demoLabel(`Cut evidence · ${n} stammer cuts · each checked by code; you approve every cut`);
   $("review").hidden = $("outputs").hidden = $("danger").hidden = false;
   $("a-orig").src = `/studio/${job.id}/audio/original.wav`;
   $("clone-off").hidden = job.clone_available;
@@ -230,6 +234,7 @@ $("a-orig").ontimeupdate = () => drawWave($("wave"), origBuf, job.edits, $("a-or
 
 // ---------------------------------------------------------------- step 3 and 4
 $("render").onclick = async () => {
+  demoLabel("Real voice output · only cuts of your recording, nothing added");
   $("render").disabled = true;
   $("render-note").textContent = "Cutting and joining…";
   const out = await (await fetch(`/studio/${job.id}/render`, { method: "POST" })).json();

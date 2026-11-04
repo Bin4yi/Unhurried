@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unhurried Voice-over</title>
+  <meta name="description" content="Your own voice-over, with voice editing on and off.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/web/studio.css">
+  <link rel="stylesheet" href="/web/voice-studio.css">
+  <style>
+    .vo { max-width: 1280px; margin: 0 auto; padding: 8px 24px 48px; display: grid; gap: 20px; }
+    .switch-row { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+    .big-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 5px; background: var(--paper-2); }
+    .big-toggle button { border: 0; background: transparent; font: 600 20px/1 var(--sans); padding: 14px 30px; border-radius: 999px; cursor: pointer; color: var(--ink-2); }
+    .big-toggle button[aria-pressed="true"].on { background: var(--sage); color: #fff; }
+    .big-toggle button[aria-pressed="true"].off { background: var(--ink); color: var(--paper); }
+    .label-big { font: italic 400 30px/1.1 var(--serif); }
+    .label-big.on { color: var(--sage); }
+    .play { width: 64px; height: 64px; border-radius: 50%; border: 0; background: var(--ink); color: var(--paper); cursor: pointer; display: grid; place-items: center; }
+    .play svg { width: 26px; height: 26px; }
+    .time { font: 500 18px/1 var(--sans); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    input[type=range] { width: 100%; accent-color: var(--clay); }
+    .texts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 920px) { .texts { grid-template-columns: 1fr; } }
+    .said, .cleaned { font: 400 22px/1.7 var(--serif); margin: 8px 0 0; }
+    .said .cut { color: var(--clay); text-decoration: line-through; text-decoration-thickness: 1.5px; }
+    .said span.now, .cleaned span.now { background: var(--sage-soft); border-radius: 6px; }
+    .panel-dim { opacity: .55; transition: opacity .3s; }
+    .exports { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .exports input { width: 90px; border: 1px solid var(--line); background: var(--paper); border-radius: 10px; padding: 8px 10px; }
+    body.demo { font-size: 19px; }
+    body.demo .said, body.demo .cleaned { font-size: 26px; }
+    body.demo .foot, body.demo #picker-row { display: none; }
+  </style>
+</head>
+<body data-demo-badge="Real recording" data-demo-start="Voice editing ON · my real voice, stammers cut">
+<script type="module" src="/web/demo-mode.js"></script>
+
+<header class="top">
+  <h1 class="mark">unhurried<span>.</span></h1>
+  <span class="tag">Voice-over</span>
+  <div class="spacer"></div>
+  <nav class="nav" aria-label="Pages">
+    <a href="/web/studio.html">Live</a>
+    <a href="/web/voice-studio.html">Voice Studio</a>
+    <a href="/web/voice-over.html" aria-current="page">Voice-over</a>
+  </nav>
+</header>
+
+<main class="vo">
+  <section class="card step" id="picker-row">
+    <div class="row">
+      <label for="pick" class="eyebrow" style="margin:0">Recording</label>
+      <select id="pick" style="flex:1;min-width:240px"></select>
+      <a class="btn" href="/web/voice-studio.html">Record or upload a new voice-over</a>
+    </div>
+    <p class="muted" id="pick-note">Record your narration in Voice Studio (or upload the audio from your screen recording), check the cuts, then open it here.</p>
+  </section>
+
+  <section class="card step" aria-labelledby="sw-label">
+    <div class="switch-row">
+      <h2 id="sw-label" class="label-big" style="margin:0">Voice editing</h2>
+      <div class="big-toggle" role="group" aria-label="Voice editing">
+        <button class="on" id="on" aria-pressed="true">On</button>
+        <button class="off" id="off" aria-pressed="false">Off</button>
+      </div>
+      <button class="play" id="play" aria-label="Play">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <span class="time" id="time">0:00</span>
+      <span class="badge" id="badge">Real voice · only cuts</span>
+    </div>
+    <input type="range" id="seek" min="0" max="100" step="0.01" value="0" aria-label="Position" style="margin-top:18px">
+    <p class="muted" id="state-note">On: your voice with repeats, fillers and long blocks cut out. Off: exactly what you said. Press <kbd>E</kbd> to switch, <kbd>Space</kbd> to play.</p>
+  </section>
+
+  <section class="texts">
+    <div class="card step" id="said-card">
+      <h2 class="eyebrow">What I said</h2>
+      <p class="said" id="said"></p>
+    </div>
+    <div class="card step" id="clean-card">
+      <h2 class="eyebrow">Clean</h2>
+      <p class="cleaned" id="cleaned"></p>
+    </div>
+  </section>
+
+  <section class="editor card step">
+    <div>
+      <h2 class="eyebrow">Cuts and why</h2>
+      <ul class="edits" id="edits"></ul>
+    </div>
+    <div>
+      <h2 class="eyebrow">Turned down by the checks</h2>
+      <ul class="rules" id="rejected"><li class="muted">None.</li></ul>
+      <div id="ai" hidden>
+        <h2 class="eyebrow" style="margin-top:18px">AI voice (watermarked)</h2>
+        <audio id="a-ai" controls preload="none"></audio>
+      </div>
+    </div>
+  </section>
+
+  <section class="card step" id="export-row">
+    <h2 class="eyebrow">For the video</h2>
+    <div class="exports">
+      <a class="btn solid" id="dl-clean" download>Download clean voice-over</a>
+      <span class="muted">Before/after clip from</span>
+      <input id="ab-start" type="number" min="0" step="0.5" value="0" aria-label="Start second"> s, length
+      <input id="ab-len" type="number" min="3" max="30" step="1" value="10" aria-label="Length in seconds"> s
+      <a class="btn" id="dl-ab" download>Download before/after</a>
+    </div>
+    <p class="muted">The before/after clip plays your original, a short pause, then the same words with voice editing on. Every sound is your own voice.</p>
+  </section>
+</main>
+<footer class="foot">Muse Spark 1.2 listens for stammers; Meta wav2vec 2.0 places each one in the audio; you approve every cut.</footer>
+<audio id="a-orig" preload="auto"></audio>
+<audio id="a-clean" preload="auto"></audio>
+<script type="module" src="/web/voice-over.js"></script>
+</body>
+</html>

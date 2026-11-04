@@ -140,3 +140,26 @@ def test_max_wait_counts_from_last_voice():
     c.on_model_turn("I want to", 1.7)
     assert c.tick(4.5, last_voice_t=2.5) == []          # 2.0 s since voice
     assert c.tick(5.5, last_voice_t=2.5)[0]["reason"] == "max_wait"
+
+
+@pytest.mark.parametrize("sound", [None,
+                                   {"pitch_falling": None, "fade": 0.3, "voiced_in_pause": False, "score": 0.5},
+                                   {"pitch_falling": False, "fade": 0.0, "voiced_in_pause": False, "score": 0.1}])
+def test_no_decision_waits_more_than_700_ms_for_spark(sound):
+    c = TurnController(use_checker=True, use_sound=True, check_timeout_ms=700)
+    c.on_pause(1.0, 2.0)
+    acts = c.on_model_turn("Book a table for two", 2.0, sound=sound)
+    assert acts == [{"do": "check", "text": "Book a table for two"}]
+    assert c.tick(2.69) == []                       # still inside the 700 ms budget
+    late = c.tick(2.70)                             # Spark not back: decide now with words + voice
+    assert late and late[0]["do"] in ("send", "hold")
+    assert late[0]["reason"] in ("spark_late", "spark_late_sound")
+    assert c.decisions[-1]["spark_check"] == {"answer": "late"}
+    assert c.awaiting is None                       # nothing is left waiting on Spark
+
+
+def test_words_and_voice_agree_skip_spark():
+    c = TurnController(use_checker=True, use_sound=True)
+    c.on_pause(1.0, 2.0)
+    finished = {"pitch_falling": True, "fade": 0.8, "voiced_in_pause": False, "score": 0.9}
+    assert c.on_model_turn("Book a table for two", 2.0, sound=finished)[0]["reason"] == "words_sound"

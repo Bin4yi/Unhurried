@@ -35,6 +35,16 @@ def _safe(fn):
         pass
 
 
+@app.middleware("http")
+async def no_trailing_slash(request: Request, call_next):
+    """/web/page.html/ would load the page without its styles; send it to /web/page.html."""
+    path = request.url.path
+    if path.startswith("/web/") and path.endswith(".html/"):
+        query = f"?{request.url.query}" if request.url.query else ""
+        return RedirectResponse(path.rstrip("/") + query, status_code=308)
+    return await call_next(request)
+
+
 @app.get("/")
 async def index():
     return RedirectResponse("/web/studio.html")

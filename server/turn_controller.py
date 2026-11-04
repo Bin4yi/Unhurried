@@ -151,9 +151,10 @@ class TurnController:
         if self.awaiting and now >= self.awaiting[1]:
             if self.use_sound and verdict(self.sound) == "unfinished":
                 self.awaiting = None
-                return self._hold(now, "check_timeout_sound", classify(self.text),
-                                  spark={"answer": "timeout"})
-            return self._send(now, "check_timeout", spark={"answer": "timeout"})
+                return self._hold(now, "spark_late_sound", classify(self.text),
+                                  spark={"answer": "late"})
+            # Spark was not back in time: decide with words + voice, never wait longer
+            return self._send(now, "spark_late", spark={"answer": "late"})
         if self.pause_start is not None and self.text:
             quiet_since = max(self.pause_start, last_voice_t or 0.0)
             if classify(self.text)["no_words"]:

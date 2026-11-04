@@ -5,9 +5,11 @@ Unhurried variants), over the same /listen WebSocket the browser uses.
 Confirms are auto-approved and counted.
 
 Usage (server running: python -m uvicorn server.main:app --port 8000):
-  python bench/run_bench.py --clips bench/clips_synthetic.jsonl --only syn_01
-  python bench/run_bench.py --configs baseline,unhurried --parallel 4 --max-usd 2
-Writes bench/results/{date}_{time}.json and prints counts like "cut-offs: 3/30".
+  python bench/run_bench.py --set real_self --configs baseline,sound_spark
+  python bench/run_bench.py --set synthetic --only syn_01
+  python bench/run_bench.py --set all          (one results file per set; sets never mixed)
+A failed run is retried up to 2 times; runs that still fail are listed separately.
+Writes bench/results/{date}_{time}_{set}.json and prints counts like "cut-offs: 3/30".
 """
 
 from __future__ import annotations
@@ -32,12 +34,20 @@ CONFIGS = {
     "sound": {"mode": "unhurried", "engine": {"spark_check": False, "sound": True}},
     "sound_spark": {"mode": "unhurried", "engine": {"spark_check": True, "sound": True}},
 }
+SETS = ("real_self", "synthetic")
+CLIP_FILES = ("bench/clips.jsonl", "bench/clips_synthetic.jsonl")
+TRIES = 3
 TAIL_S = 10.0         # silence after the clip (longer than 6 s max wait + speech lag)
 SETTLE_S = 25.0       # max wait for the bot to finish after the audio
 
 
-def load_clips(path: Path, only: list[str] | None) -> list[dict]:
-    clips = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines() if x.strip()]
+def load_clips(clip_set: str, only: list[str] | None) -> list[dict]:
+    clips = []
+    for f in CLIP_FILES:
+        p = ROOT / f
+        if p.exists():
+            clips += [json.loads(x) for x in p.read_text(encoding="utf-8").splitlines() if x.strip()]
+    clips = [c for c in clips if c.get("set") == clip_set]
     if only:
         clips = [c for c in clips if c["id"] in only]
     return [c for c in clips if (ROOT / c["file"]).exists()]
@@ -55,8 +65,10 @@ async def run_clip(url: str, clip: dict, name: str, cfg: dict, tag: str) -> list
     events: list[dict] = []
     async with websockets.connect(url, max_size=None) as ws:
         sid = f"bench_{tag}_{name}_{clip['id']}"
-        await ws.send(json.dumps({"type": "start", "bench": True, "auto_confirm": True,
-                                  "session_id": sid, **cfg}))
+        start_msg = {"type": "start", "bench": True, "auto_confirm": True, "session_id": sid, **cfg}
+        if clip.get("bot"):
+            start_msg["bot"] = clip["bot"]           # free talk goes to the general assistant
+        await ws.send(json.dumps(start_msg))
         ready, turns_open = asyncio.Event(), {"turns": 0, "bots": 0, "last": time.monotonic()}
 
         async def rx():
@@ -107,12 +119,19 @@ def spent_usd(since: int) -> float:
 
 
 async def main_async(args) -> int:
-    clips = load_clips(Path(args.clips), args.only.split(",") if args.only else None)
-    if not clips:
-        print("No clips found (check --clips and that the audio files exist).")
-        return 1
+    sets = SETS if args.set == "all" else (args.set,)
+    for clip_set in sets:
+        clips = load_clips(clip_set, args.only.split(",") if args.only else None)
+        if not clips:
+            print(f"No clips in set {clip_set} (check bench/clips*.jsonl and the audio files).")
+            continue
+        await run_set(args, clip_set, clips)
+    return 0
+
+
+async def run_set(args, clip_set: str, clips: list[dict]) -> None:
     names = [n.strip() for n in args.configs.split(",")]
-    tag = time.strftime("%Y%m%d_%H%M%S")
+    tag = f"{time.strftime('%Y%m%d_%H%M%S')}_{clip_set}"
     log_path = ROOT / "runs/llm_calls.jsonl"
     cost_start = log_path.stat().st_size if log_path.exists() else 0
     sem = asyncio.Semaphore(args.parallel)
@@ -123,14 +142,18 @@ async def main_async(args) -> int:
         async with sem:
             if stop["flag"]:
                 return
-            try:
-                events = await run_clip(args.url, clip, name, CONFIGS[name], tag)
-                row = score_run(clip, events)
-            except Exception as exc:
-                row = {"clip": clip["id"], "kind": clip["kind"], "error": repr(exc)}
+            row = None
+            for attempt in range(1, TRIES + 1):
+                try:
+                    events = await run_clip(args.url, clip, name, CONFIGS[name], f"{tag}_{attempt}")
+                    row = {**score_run(clip, events), "attempts": attempt}
+                    break
+                except Exception as exc:
+                    row = {"clip": clip["id"], "kind": clip["kind"], "error": repr(exc), "attempts": attempt}
+                    await asyncio.sleep(2)
             rows[name].append(row)
             usd = spent_usd(cost_start)
-            flag = "CUT" if row.get("cut_off") else "   "
+            flag = f"CUT x{row.get('cut_ins')}" if row.get("cut_off") else "      "
             ok = "OK " if row.get("understood") else "-- "
             print(f"[{name:>9}] {clip['id']:<8} {flag} {ok} turns={row.get('turns')} "
                   f"delay={row.get('delay_s')} ${usd:.3f}", flush=True)
@@ -141,37 +164,38 @@ async def main_async(args) -> int:
     await asyncio.gather(*[one(c, n) for c in clips for n in names])
 
     good = {n: [r for r in rs if "error" not in r] for n, rs in rows.items()}
+    failed = [{"config": n, **r} for n, rs in rows.items() for r in rs if "error" in r]
     summary = {n: summarize(rs) for n, rs in good.items()}
     if "baseline" in good:
         for n in names:
             if n != "baseline":
                 summary[n]["added_delay_vs_baseline"] = added_delay(good["baseline"], good[n])
-    result = {"run": tag, "date": time.strftime("%Y-%m-%d %H:%M"), "clips_file": args.clips,
+    result = {"run": tag, "set": clip_set, "date": time.strftime("%Y-%m-%d %H:%M"), "failed": failed,
               "configs": {n: CONFIGS[n] for n in names}, "summary": summary, "rows": rows,
               "usd": round(spent_usd(cost_start), 4)}
     out = ROOT / "bench/results" / f"{tag}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2), encoding="utf-8")
 
-    print(f"\nResults ({len(clips)} clips, small set) -> {out.relative_to(ROOT)}")
+    print(f"\nResults, set {clip_set} ({len(clips)} clips, small set) -> {out.relative_to(ROOT)}")
     for n, s in summary.items():
-        line = (f"{n:>9}: cut-offs {s['cut_offs']}/{s['stammer_clips']}  "
-                f"understood {s['understood']}/{s['clips']}  "
+        line = (f"{n:>11}: cut-offs {s['cut_offs']}/{s['stammer_clips']} clips ({s['cut_ins']} replies "
+                f"while still talking)  early end-of-speech {s['early_eos_stammer']}  "
+                f"understood {s['understood']}/{s['understanding_clips']}  "
                 f"fluent delay median {s['fluent_delay_median_s']} s  "
                 f"invented {s['invented_turns']}/{s['turns']} turns  "
                 f"slow runs {s['slow_runs']}")
         if "added_delay_vs_baseline" in s:
             line += f"  added delay median {s['added_delay_vs_baseline']['median_s']} s"
         print(line)
-    errors = sum(1 for rs in rows.values() for r in rs if "error" in r)
-    if errors:
-        print(f"{errors} runs failed; see 'error' in the results file.")
-    return 0
+    if failed:
+        print(f"{len(failed)} runs failed after {TRIES} tries: " +
+              ", ".join(f"{f['config']}/{f['clip']}" for f in failed))
 
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--clips", default="bench/clips.jsonl")
+    p.add_argument("--set", default="real_self", choices=[*SETS, "all"])
     p.add_argument("--only", help="comma-separated clip ids")
     p.add_argument("--configs", "--mode", dest="configs", default="baseline,unhurried",
                    help="comma-separated: " + ", ".join(CONFIGS))

@@ -1,11 +1,14 @@
 """Benchmark scoring. Measures the AI pipeline, never the person.
 
 One run = one clip streamed through one config. From the run's events:
-  cut_off     a turn was sent before the person's real end of speech
+  cut_off     a turn was sent before the person's real end of speech ("cut-off")
+  cut_ins     how many turns were sent before the real end (the bot replied while the
+              person was still talking; for free talk there can be several)
   understood  the bot ran the expected tool with the expected details
   delay_s     last turn sent time minus real end of speech
   invented    the rebuild produced content the person did not say (guard fails)
-  early_eos   Voice Transcribe end-of-speech fired before the real end (in a block)
+  early_eos   Voice Transcribe's end-of-speech fired during a pause inside the speech
+              ("early end-of-speech"): a signal only, not a reply
 """
 
 from __future__ import annotations
@@ -74,8 +77,9 @@ def score_run(clip: dict, events: list[dict]) -> dict:
             if e.get("type") == "speech_start" and e.get("start_t") is not None]
     return {
         "clip": clip["id"], "kind": clip["kind"],
-        "turns": len(turns), "cut_off": bool(cut),
+        "turns": len(turns), "cut_off": bool(cut), "cut_ins": len(cut),
         "understood": understood(clip.get("expected", {}), calls),
+        "understanding_scored": clip["kind"] != "talk",
         "delay_s": round(last_sent - end, 3) if last_sent is not None else None,
         "invented": sum(1 for t in turns if t.get("guard_fails")),
         "guard_events": [f for t in turns for f in t.get("guard_fails", [])],
@@ -100,14 +104,17 @@ def pct(values: list[float], p: float) -> float | None:
 
 def summarize(rows: list[dict]) -> dict:
     """Counts per config: cut-offs on stammer clips, understanding, fluent delay."""
-    st = [r for r in rows if r["kind"] == "stammer"]
+    st = [r for r in rows if r["kind"] in ("stammer", "talk")]   # clips with pauses or repeats
+    us = [r for r in rows if r.get("understanding_scored", True)]
     fl = [r for r in rows if r["kind"] == "fluent"]
     fl_delay = [r["delay_s"] for r in fl if r["delay_s"] is not None]
     return {
         "clips": len(rows), "stammer_clips": len(st), "fluent_clips": len(fl),
         "cut_offs": sum(r["cut_off"] for r in st),
+        "cut_ins": sum(r.get("cut_ins", int(r["cut_off"])) for r in st),
+        "understanding_clips": len(us),
         "cut_offs_fluent": sum(r["cut_off"] for r in fl),
-        "understood": sum(r["understood"] for r in rows),
+        "understood": sum(r["understood"] for r in us),
         "understood_stammer": sum(r["understood"] for r in st),
         "understood_fluent": sum(r["understood"] for r in fl),
         "fluent_delay_median_s": round(statistics.median(fl_delay), 3) if fl_delay else None,

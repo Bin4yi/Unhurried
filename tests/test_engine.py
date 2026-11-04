@@ -67,7 +67,7 @@ def test_slow_check_times_out_and_sends():
         await asyncio.sleep(0.3)   # late answer must not send twice
         return sent, out
     sent, out = run(go())
-    assert sent[0]["reason"] == "check_timeout"
+    assert sent[0]["reason"] == "spark_late"
     assert out == []
 
 

@@ -66,3 +66,37 @@ def test_rejects_bad_input():
                data={"meta": json.dumps(META)})
     assert r.status_code == 400
     assert c.get("/bench/audio/..%2F..%2Fsecret.wav").status_code == 404
+
+
+def test_real_scripts_parse_expected():
+    from server.bench_api import parse_real_scripts
+    rows = parse_real_scripts("# c\nread | Book a table for two | 2 19:00 friday\n"
+                              "read | What are my bookings | list_bookings\nthink | When do you close? | none\n"
+                              "think | Book a family dinner | ask\n")
+    assert rows[0]["expected"] == {"tool": "book_table", "args": {"people": 2, "time": "19:00", "day": "friday"}}
+    assert rows[1]["expected"]["tool"] == "list_bookings" and rows[2]["expected"] == {}
+    assert rows[3]["expected"] == {"tool": "book_table", "args": {}}
+    assert [r["kind"] for r in rows] == ["fluent", "fluent", "stammer", "stammer"]
+    assert rows[3]["mode"] == "think"
+
+
+def test_real_self_clips_go_to_their_folder_and_can_be_undone():
+    c = TestClient(app)
+    meta = {**META, "set": "real_self"}
+    r = c.post("/bench/clip", files={"audio": ("c.wav", wav(), "audio/wav")}, data={"meta": json.dumps(meta)})
+    clip = r.json()
+    assert clip["id"] == "real_01" and clip["set"] == "real_self"
+    assert clip["file"] == "bench/audio/real_self/real_01.wav" and Path(clip["file"]).exists()
+    assert c.get("/bench/audio/real_01.wav").status_code == 200
+    assert c.delete("/bench/clip/real_01").json() == {"deleted": "real_01"}
+    assert not Path(clip["file"]).exists() and Path("bench/clips.jsonl").read_text() == ""
+    assert c.delete("/bench/clip/clip_01").status_code == 400      # only real-session clips
+
+
+def test_real_self_must_be_own_voice():
+    clip = build_clip({**META, "set": "real_self", "consent": "self"}, "real_01", 1.0)
+    assert clip["set"] == "real_self"
+    import pytest
+    from fastapi import HTTPException
+    with pytest.raises(HTTPException):
+        build_clip({**META, "set": "real_self", "consent": "volunteer"}, "real_02", 1.0)

@@ -30,7 +30,7 @@ def test_unhurried_joins_turns_and_sends_clean_text():
 
     async def go():
         fake = FakeStream()
-        s = start_session(sent, fake, bot, engine={"spark_check": False})
+        s = start_session(sent, fake, bot, engine={"spark_check": False, "sound": False})
         await s.start()
         q = fake.queue.put_nowait
         q({"type": "speechStart", "turnId": 0, "audioProcessedMs": 0})

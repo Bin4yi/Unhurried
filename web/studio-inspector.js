@@ -10,20 +10,20 @@ const HOLD_WHY = {
   check_no: () => "Spark said the request was not complete yet.",
   sound: () => "Your voice did not sound finished.",
   voice_in_pause: () => "Your voice was still active in the pause.",
-  check_timeout_sound: () => "Spark was slow and your voice did not sound finished.",
+  spark_late_sound: () => "Spark was not back within 700 ms, and your voice did not sound finished.",
 };
 const SEND_WHY = {
   rules: "A complete sentence. Sent after a short beat.",
   words_sound: "Your words and your voice both sounded finished.",
   check_yes: "Spark agreed the request was complete.",
-  check_timeout: "Your words looked complete. Spark was slow, so you were not kept waiting.",
+  spark_late: "Your words looked complete. Spark was not back within 700 ms, so you were not kept waiting.",
   check_failed: "Your words looked complete.",
   max_wait: "A long quiet after your last word, so it was sent.",
   max_wait_empty: "A long quiet with no words, so it was sent.",
   typed: "You typed to finish the sentence.",
 };
 const LABEL = {
-  rules: "words", words_sound: "words + voice", check_yes: "Spark", check_timeout: "words",
+  rules: "words", words_sound: "words + voice", check_yes: "Spark", spark_late: "words (Spark late)",
   check_failed: "words", max_wait: "max wait", max_wait_empty: "max wait", typed: "typed",
   model_end: "end of speech",
 };
@@ -85,7 +85,7 @@ export function showDecision(d) {
   }
   const sp = d.spark_check;
   $("sig-spark").textContent = !sp ? (d.decision === "check" ? "asking…" : "not needed")
-    : sp.answer === "timeout" ? "too slow, skipped" : `${sp.answer}${sp.ms ? `, ${(sp.ms / 1000).toFixed(1)}s` : ""}${sp.cached ? " (early)" : ""}`;
+    : sp.answer === "late" ? "late (over 700 ms), not waited for" : `${sp.answer}${sp.ms ? `, ${(sp.ms / 1000).toFixed(1)}s` : ""}${sp.cached ? " (early)" : ""}`;
 
   const last = (d.last_words || []).slice(-1)[0] || "";
   if (d.decision === "hold") {

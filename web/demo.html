@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Unhurried Demo</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/web/style.css">
   <style>
     main { max-width: 1200px; }
     .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -18,7 +18,9 @@
     .stat .cutoff { color: var(--warn); font-weight: 600; }
   </style>
 </head>
-<body>
+<body data-demo-start="Same audio · left: normal end-of-speech · right: Unhurried">
+<script type="module" src="/web/demo-mode.js"></script>
+
 <main>
   <h1>Same voice, two voice bots</h1>
   <p class="sub">Left: a normal voice bot. Right: the same bot behind Unhurried.</p>
@@ -54,6 +56,6 @@
     </section>
   </div>
 </main>
-<script type="module" src="demo.js"></script>
+<script type="module" src="/web/demo.js"></script>
 </body>
 </html>

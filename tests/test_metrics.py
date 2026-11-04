@@ -54,3 +54,14 @@ def test_summary_and_added_delay():
     assert s["cut_offs"] == 0 and s["understood"] == 2 and s["fluent_delay_median_s"] == 1.3
     assert summarize(base)["cut_offs"] == 1
     assert added_delay(base, test) == {"n": 1, "median_s": 0.5, "p95_s": 0.5}
+
+
+def test_free_talk_counts_every_reply_while_still_talking():
+    clip = {"id": "talk_01", "kind": "talk", "speech_end_s": 40.0, "expected": {}}
+    events = [{"type": "speech_end", "end_t": 5.0}, {"type": "turn", "sent_t": 6.0},
+              {"type": "turn", "sent_t": 20.0}, {"type": "turn", "sent_t": 40.9}]
+    r = score_run(clip, events)
+    assert r["cut_off"] and r["cut_ins"] == 2 and not r["understanding_scored"]
+    s = summarize([r])
+    assert s["cut_offs"] == 1 and s["cut_ins"] == 2 and s["stammer_clips"] == 1
+    assert s["understanding_clips"] == 0 and s["early_eos_stammer"] == 1
