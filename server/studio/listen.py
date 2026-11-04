@@ -8,8 +8,9 @@
 4. Evidence Every cut must contain voice, align confidently, be followed by the word,
             and stay short. If wav2vec 2.0 independently heard the same sound there,
             the cut is "confirmed by two models" and on; otherwise it is shown, off.
-5. Twice    Each piece is heard twice. A cut is on if wav2vec 2.0 heard it too, or if
-            both listens agree; a cut only one listen heard waits for the person.
+5. Twice    Each piece is heard twice. A cut is on if wav2vec 2.0 heard it too, if both
+            listens agree, or (for repeated words) if Voice Transcribe also wrote the word
+            twice there. A cut only one listen heard waits for the person.
 6. Limits   At most 35% of the recording is cut; the last attempt at a word is kept.
 """
 
@@ -30,7 +31,8 @@ CHUNK_MIN_S, CHUNK_MAX_S = 8.0, 15.0
 MAX_CUT_S, MAX_SHARE = 2.5, 0.35
 MIN_SCORE, DRIFT_MIN = 0.2, 0.55
 PROMPT = (
-    "You are a careful audio transcriber for a speech editing tool. Write EXACTLY what is "
+    "You are a careful audio transcriber for a speech editing tool. The speech is in English. "
+    "Write EXACTLY what is "
     "spoken, not what was meant. Keep every stammer: repeated sounds or syllables as "
     "fragments ending in '-' (\"B- B- Binula\", \"c- currently\"), repeated words as spoken "
     "(\"my my my\"), fillers as uh or um. Do not add words that are not spoken. Do not fix "
@@ -135,6 +137,16 @@ def heard_same(edit: dict, acoustic: list[dict], words: list[align.Word]) -> boo
     return any(E._fold(a["text"])[:1] == first for a in inside)
 
 
+def transcript_heard_repeat(edit: dict, vt_words: list[align.Word]) -> bool:
+    """Third witness: Voice Transcribe keeps repeated words in its own transcript. If it wrote
+    the same word twice in a row at this spot, the repeat is confirmed."""
+    if edit["kind"] != "repeat":
+        return False
+    target = E.norm(edit["text"].split()[0]) if edit["text"].split() else ""
+    near = [w for w in vt_words if edit["start"] - 0.8 <= w.start <= edit["end"] + 0.8]
+    return any(E.norm(a.text) == E.norm(b.text) == target for a, b in zip(near, near[1:]))
+
+
 def check(edit: dict, words: list[align.Word], acoustic: list[dict], x16: np.ndarray,
           floor: float) -> tuple[bool, str | None]:
     """Evidence gates. Returns (confirmed, rejection reason or None)."""
@@ -201,7 +213,8 @@ async def scan(x16: np.ndarray, vt_words: list[align.Word], acoustic: list[dict]
                 else:
                     e["confirmed"] = confirmed             # wav2vec 2.0 heard it too
                     e["agreed"] = overlaps(e, second)      # the second listen heard it too
-                    e["on"] = confirmed or e["agreed"]     # otherwise it waits for the person
+                    e["transcript"] = transcript_heard_repeat(e, vt_here)   # Voice Transcribe too
+                    e["on"] = confirmed or e["agreed"] or e["transcript"]   # else the person decides
         base = len(all_words)
         for e in found:
             if not e.pop("drop", False):

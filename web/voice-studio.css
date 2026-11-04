@@ -59,3 +59,7 @@ audio { width: 100%; }
 .ok { color: var(--sage); font-weight: 600; }
 .err { color: var(--clay); }
 .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+.words .plain { cursor: pointer; }
+.words .plain:hover { background: var(--paper-2); }
+.kind.manual { background: var(--paper-2); color: var(--ink); }

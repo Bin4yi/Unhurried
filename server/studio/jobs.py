@@ -94,7 +94,7 @@ async def create(data: bytes, source: str, keywords: list[str], use_spark: bool 
             raise ValueError(f"recordings up to {MAX_SECONDS // 60} minutes")
         (d / "original.wav").write_bytes(wav)
         t0 = time.monotonic()
-        tr = await llm.transcribe_file(wav, keywords=keywords, purpose="studio")
+        tr = await transcribe(wav, keywords)
         transcript = " ".join(t["transcript"] for t in tr.get("turns", [])) or tr.get("transcript", "")
         words, found, harness = await analyze(to16k(x, rate), transcript, use_spark)
     except Exception:
@@ -108,11 +108,33 @@ async def create(data: bytes, source: str, keywords: list[str], use_spark: bool 
     return job
 
 
-async def reanalyze(job: dict, use_spark: bool = True) -> dict:
+LANGUAGE = ["English"]
+
+
+async def transcribe(wav: bytes, keywords: list[str] | None = None) -> dict:
+    """English transcript. The language setting is only a hint, so words still written in
+    another script (an accent read as Hindi) are dropped; the model listen covers them."""
+    tr = await llm.transcribe_file(wav, keywords=keywords, language_bias=LANGUAGE, purpose="studio")
+    for t in tr.get("turns", []):
+        t["transcript"] = latin_only(t.get("transcript", ""))
+    tr["transcript"] = latin_only(tr.get("transcript", ""))
+    return tr
+
+
+def latin_only(text: str) -> str:
+    # keep words in Latin letters (incl. accents, up to U+024F); drop other scripts
+    return " ".join(w for w in text.split() if all(ord(c) <= 0x24F for c in w))
+
+
+async def reanalyze(job: dict, use_spark: bool = True, retranscribe: bool = False) -> dict:
     """Find the cuts again from the saved recording (after the cut finder improves)."""
     d = _dir(job["id"])
     x, rate = render.read_wav_bytes((d / "original.wav").read_bytes())
+    if retranscribe:
+        tr = await transcribe((d / "original.wav").read_bytes())
+        job["transcript"] = " ".join(t["transcript"] for t in tr.get("turns", [])) or tr.get("transcript", "")
     words, found, harness = await analyze(to16k(x, rate), job["transcript"], use_spark)
+    keep_person_choices(job.get("edits", []), found)
     job.update(words=[w.__dict__ for w in words], edits=found, harness=harness, check=None)
     save(job)
     return job
@@ -137,10 +159,42 @@ async def analyze(x16: np.ndarray, transcript: str, use_spark: bool) -> tuple[li
     return words, found, {"mode": "model", "rejected": res["rejected"], "pieces": res["pieces"]}
 
 
+def keep_person_choices(old: list[dict], new: list[dict]) -> None:
+    """A cut the person switched on or off by hand keeps that choice after a re-analysis,
+    when a new cut covers the same moment."""
+    for o in old:
+        if o.get("kind") == "manual":
+            new.append(o)              # the person's own cuts are always kept
+            continue
+        if not o.get("user_set"):
+            continue
+        for n in new:
+            if n["kind"] == o["kind"] and n["start"] < o["end"] and n["end"] > o["start"]:
+                n["on"], n["user_set"] = o["on"], True
+
+
+def add_manual_cut(job: dict, i: int) -> dict:
+    """The person cuts a word the model missed: from the word's start to the next word's start."""
+    words = job["words"]
+    if not 0 <= i < len(words) - 1:
+        raise ValueError("pick a word that has a word after it")
+    if any(e.get("words") and e["words"][0] <= i <= e["words"][1] and e["kind"] != "block"
+           for e in job["edits"]):
+        raise ValueError("this word already has a cut; tap it to switch it")
+    n = max([int(e["id"][1:]) for e in job["edits"] if e["id"][1:].isdigit()] + [0]) + 1
+    job["edits"].append({"id": f"e{n}", "kind": "manual", "start": words[i]["start"],
+                         "end": words[i + 1]["start"], "text": words[i]["text"], "words": [i, i],
+                         "on": True, "user_set": True, "by": "person"})
+    job["edits"].sort(key=lambda e: e["start"])
+    save(job)
+    return job
+
+
 def apply_toggles(job: dict, on: dict[str, bool]) -> dict:
     for e in job["edits"]:
         if e["id"] in on:
             e["on"] = bool(on[e["id"]])
+            e["user_set"] = True
     save(job)
     return job
 

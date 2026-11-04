@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="studio.css">
-  <link rel="stylesheet" href="voice-studio.css">
+  <link rel="stylesheet" href="/web/studio.css">
+  <link rel="stylesheet" href="/web/voice-studio.css">
 </head>
 <body>
 <header class="top">
@@ -17,8 +17,9 @@
   <span class="tag">Voice Studio</span>
   <div class="spacer"></div>
   <nav class="nav" aria-label="Pages">
-    <a href="studio.html">Live</a>
-    <a href="voice-studio.html" aria-current="page">Voice Studio</a>
+    <a href="/web/studio.html">Live</a>
+    <a href="/web/voice-studio.html" aria-current="page">Voice Studio</a>
+    <a href="/web/voice-over.html">Voice-over</a>
   </nav>
 </header>
 
@@ -60,7 +61,8 @@
     <canvas class="wave" id="wave" width="1200" height="110" aria-label="Recording with cuts shaded. Click to play from a point."></canvas>
     <div class="editor">
       <div>
-        <p class="muted" style="margin:14px 0 0">Tap a crossed-out part to keep it.</p>
+        <p class="muted" style="margin:14px 0 0">Tap a crossed-out part to keep it. Tap a word to cut it.
+          <button class="said-btn" id="reanalyze" title="The model listens again; your own choices are kept">Listen again</button></p>
         <div class="words" id="words"></div>
         <div class="clean"><span class="eyebrow">Clean text</span><p id="clean-text"></p>
           <button class="said-btn" id="copy">Copy text</button></div>
@@ -123,6 +125,6 @@
   </section>
 </main>
 <footer class="foot">Built on Meta Muse Voice Transcribe, Muse Spark and wav2vec 2.0. AI voice by Chatterbox (MIT).</footer>
-<script type="module" src="voice-studio.js"></script>
+<script type="module" src="/web/voice-studio.js"></script>
 </body>
 </html>

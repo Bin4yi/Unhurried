@@ -90,3 +90,10 @@ def test_noise_floor_is_the_room_not_the_voice():
     x[int(1.0 * RATE):int(2.0 * RATE)] = 0.001
     assert listen.noise_floor(x) < 0.01
     assert listen.noise_floor(voice(4)) == 0.02          # no pauses: capped below speech level
+
+
+def test_transcript_is_a_third_witness_for_repeats():
+    vt = [Word("The", 1.3, 1.4, 0.9), Word("The", 1.5, 1.6, 0.9), Word("same", 1.7, 1.9, 0.9)]
+    assert listen.transcript_heard_repeat({"kind": "repeat", "text": "The", "start": 1.3, "end": 1.5}, vt)
+    assert not listen.transcript_heard_repeat({"kind": "repeat", "text": "when", "start": 1.3, "end": 1.5}, vt)
+    assert not listen.transcript_heard_repeat({"kind": "sound", "text": "The", "start": 1.3, "end": 1.5}, vt)

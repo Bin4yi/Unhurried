@@ -206,7 +206,14 @@ def clean_text(words: list[Word], edits: list[dict]) -> str:
     for e in edits:
         if e["on"] and e.get("words") and not e.get("partial"):
             gone.update(range(e["words"][0], e["words"][1] + 1))
-    return " ".join(w.text for i, w in enumerate(words) if i not in gone and not w.text.endswith("-"))
+    return " ".join(w.text.rstrip("-") for i, w in enumerate(words)
+                    if i not in gone and not is_fragment(w.text))
+
+
+def is_fragment(text: str) -> bool:
+    """A short cut-off piece like "b-" or "fin-". A whole word written with a dash ("books-")
+    is not a fragment and stays in the text unless a cut removes it."""
+    return text.endswith("-") and len(norm(text)) <= 3
 
 
 async def find_edits(words: list[Word], acoustic: list[dict], use_spark: bool = True,

@@ -212,10 +212,13 @@ class TranscribeStream:
 
 
 async def transcribe_file(wav: bytes, *, keywords: list[str] | None = None,
+                          language_bias: list[str] | None = None,
                           mode: str = "ENDPOINTING", purpose: str = "studio") -> dict:
     """One-shot Voice Transcribe for a mono 16-bit 16/24 kHz WAV.
     Returns {"transcript", "turns": [{startMs, endMs, transcript}], "audioDurationMs"}."""
     request = {"mode": mode, "model": TRANSCRIBE_MODEL, "audioEncoding": "WAV"}
+    if language_bias:
+        request["languageBias"] = language_bias   # a hint; auto-detect misread an accent as Hindi
     kw = [k for k in (keywords or []) if k][:100]
     if kw:
         request["keywords"] = kw

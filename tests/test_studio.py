@@ -177,3 +177,69 @@ def test_short_attempt_before_word():
     assert edits.is_sound_token("ma", "mouse") and edits.is_sound_token("ca", "currently")
     for word, nxt in [("my", "mouse"), ("to", "test"), ("in", "india"), ("a", "apple"), ("me", "meta")]:
         assert not edits.is_sound_token(word, nxt)
+
+
+def test_voiceover_time_mapping_and_ab_clip(monkeypatch, tmp_path):
+    from server.studio import voiceover
+    omap = render.output_map(10.0, [{"start": 2.0, "end": 4.0, "on": True}, {"start": 6.0, "end": 7.0, "on": True}])
+    assert voiceover.to_clean_time(1.0, omap) == 1.0
+    assert voiceover.to_clean_time(3.0, omap) == 2.0          # inside a cut: next kept part
+    assert voiceover.to_clean_time(5.0, omap) == 3.0
+    assert voiceover.to_clean_time(8.0, omap) == 5.0
+    assert voiceover.to_original_time(3.0, omap) == 5.0
+    assert voiceover.to_original_time(4.5, omap) == 7.5
+    for t in [0.5, 1.9, 4.2, 5.5, 7.1, 9.9]:                 # round trip on kept audio
+        assert abs(voiceover.to_original_time(voiceover.to_clean_time(t, omap), omap) - t) < 1e-9
+
+    monkeypatch.setattr(jobs, "DATA", tmp_path)
+    rate = 24000
+    x = np.ones(rate * 10, dtype=np.float32) * 0.1
+    job = {"id": "a" * 16, "created": 1.0, "duration": 10.0, "transcript": "hi", "source": "mic",
+           "edits": [{"start": 2.0, "end": 4.0, "on": True}]}
+    d = tmp_path / job["id"]
+    d.mkdir()
+    (d / "original.wav").write_bytes(render.wav_bytes(x, rate))
+    (d / "job.json").write_text(json.dumps(job))
+    y, r = render.read_wav_bytes(voiceover.ab_clip(job, 1.0, 5.0))
+    # before: 5 s; gap 0.7 s; after: original 1-6 s minus the 2 s cut = 3 s
+    assert abs(len(y) / r - (5.0 + voiceover.GAP_S + 3.0)) < 0.05
+    assert voiceover.recent()[0]["id"] == job["id"]
+
+
+def test_latin_only_drops_other_scripts():
+    hindi = chr(0x92e) + chr(0x93e) + chr(0x908)
+    assert jobs.latin_only(hindi + " inside my browser") == "inside my browser"
+    assert jobs.latin_only("caf" + chr(0xe9) + " ok") == "caf" + chr(0xe9) + " ok"
+
+
+def test_whole_word_with_dash_stays_in_clean_text():
+    w = words([("before", 0.0, 0.3), ("it", 0.4, 0.5), ("books-", 0.6, 0.9), ("b-", 1.0, 1.1), ("anything", 1.2, 1.6)])
+    assert edits.clean_text(w, []) == "before it books anything"
+
+
+def test_person_choices_survive_reanalysis():
+    old = [{"kind": "repeat", "start": 1.0, "end": 1.5, "on": False, "user_set": True},
+           {"kind": "sound", "start": 3.0, "end": 3.2, "on": True}]
+    new = [{"kind": "repeat", "start": 1.1, "end": 1.6, "on": True},
+           {"kind": "sound", "start": 3.0, "end": 3.2, "on": False}]
+    jobs.keep_person_choices(old, new)
+    assert new[0]["on"] is False and new[0]["user_set"]
+    assert new[1]["on"] is False          # not chosen by hand: the new analysis decides
+
+
+def test_manual_cut_and_it_survives_reanalysis(monkeypatch, tmp_path):
+    monkeypatch.setattr(jobs, "DATA", tmp_path)
+    job = {"id": "b" * 16, "edits": [], "words": [
+        {"text": "way", "start": 1.0, "end": 1.2, "score": 0.9},
+        {"text": "way", "start": 1.3, "end": 1.5, "score": 0.9},
+        {"text": "to", "start": 1.6, "end": 1.7, "score": 0.9}]}
+    (tmp_path / job["id"]).mkdir()
+    jobs.add_manual_cut(job, 0)
+    e = job["edits"][0]
+    assert (e["kind"], e["start"], e["end"], e["on"]) == ("manual", 1.0, 1.3, True)
+    import pytest
+    with pytest.raises(ValueError):
+        jobs.add_manual_cut(job, 2)           # no word after it
+    new = []
+    jobs.keep_person_choices(job["edits"], new)
+    assert new and new[0]["kind"] == "manual"

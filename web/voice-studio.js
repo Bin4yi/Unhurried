@@ -115,7 +115,7 @@ async function decodeOriginal() {
 }
 
 // ---------------------------------------------------------------- step 2
-const KIND = { sound: "sound", repeat: "repeat", filler: "filler", correction: "correction", block: "pause" };
+const KIND = { sound: "sound", repeat: "repeat", filler: "filler", correction: "correction", block: "pause", manual: "yours" };
 
 function showReview() {
   $("review").hidden = $("outputs").hidden = $("danger").hidden = false;
@@ -147,6 +147,7 @@ function renderReview() {
     sp.textContent = w.text;
     const e = owner[i] || job.edits.find((x) => x.partial && x.words && x.words[0] === i);
     if (e) { sp.className = e.on ? "cut" : "kept"; sp.title = `${KIND[e.kind]}: tap to ${e.on ? "keep" : "cut"}`; sp.onclick = () => toggle(e); }
+    else if (i < job.words.length - 1) { sp.className = "plain"; sp.title = "tap to cut this word"; sp.onclick = () => cutWord(i); }
     box.append(sp, " ");
     if (blocksAfter[i]) {
       const b = blocksAfter[i], g = document.createElement("span");
@@ -186,13 +187,26 @@ function renderReview() {
 
 function evidence(e) {
   if (e.kind === "block") return "pause shortened to 0.3 s";
+  if (e.kind === "manual") return "your own cut";
   if (e.by === "rules") return "found by rules (the model was not sure here)";
   const parts = ["Spark heard it"];
   if (e.agreed) parts.push("heard again on a second listen");
   if (e.confirmed) parts.push("wav2vec 2.0 heard it too");
-  if (!e.agreed && !e.confirmed) parts.push("not confirmed: check it");
+  if (e.transcript) parts.push("Voice Transcribe wrote it twice");
+  if (!e.agreed && !e.confirmed && !e.transcript) parts.push("not confirmed: check it");
   if (e.limited) parts.push("off: cut limit reached");
   return parts.join(" · ");
+}
+
+async function cutWord(i) {
+  const r = await fetch(`/studio/${job.id}/manual`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ word: i }),
+  });
+  if (!r.ok) return;
+  job = { ...job, ...(await r.json()) };
+  $("dl-clean").hidden = true;
+  $("render-note").textContent = "Cuts changed. Make the clean version again.";
+  renderReview();
 }
 
 async function toggle(e) {
@@ -224,8 +238,9 @@ $("render").onclick = async () => {
   $("dl-clean").href = url;
   $("dl-clean").hidden = false;
   const c = out.check;
-  $("render-note").textContent = "Every sound in this file is from your recording." +
-    (c ? ` Listened again: ${c.still_heard} of ${c.meant_words} meant words are clearly there.` : "");
+  $("render-note").innerHTML = `<a href="voice-over.html?job=${job.id}">Open in the voice-over player</a> · `;
+  $("render-note").append("Every sound in this file is from your recording." +
+    (c ? ` Listened again: ${c.still_heard} of ${c.meant_words} meant words are clearly there.` : ""));
   $("render").disabled = false;
   $("a-clean").play();
 };
@@ -290,15 +305,25 @@ $("delete").onclick = async () => {
   await fetch(`/studio/${job.id}`, { method: "DELETE" });
   location.reload();
 };
-// Open a saved recording: voice-studio.html?job=<id>
-const saved = new URLSearchParams(location.search).get("job");
-if (saved) {
-  fetch(`/studio/${saved}/reanalyze`, { method: "POST" }).then((r) => r.json()).then(async (j) => {
-    if (!j.id) return;
-    job = j;
-    origBuf = await decodeOriginal();
-    showReview();
-  });
+// Open a saved recording as it is: voice-studio.html?job=<id>. The model does not hear the
+// same thing twice, so analysis only runs again when the person asks (button below).
+async function openSaved(id, again = false) {
+  const r = again ? await fetch(`/studio/${id}/reanalyze`, { method: "POST" }) : await fetch(`/studio/${id}`);
+  const j = await r.json();
+  if (!j.id) return;
+  job = j;
+  origBuf = await decodeOriginal();
+  showReview();
 }
+const saved = new URLSearchParams(location.search).get("job");
+if (saved) openSaved(saved);
+$("reanalyze").onclick = async () => {
+  if (!job) return;
+  $("reanalyze").disabled = true;
+  $("reanalyze").textContent = "Listening again…";
+  await openSaved(job.id, true);
+  $("reanalyze").disabled = false;
+  $("reanalyze").textContent = "Listen again";
+};
 $("rec").onclick = toggleRecord;
 $("upload").onchange = (e) => e.target.files[0] && process(e.target.files[0], "upload");

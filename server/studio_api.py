@@ -7,9 +7,9 @@ import json
 import logging
 
 from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 
-from server.studio import jobs, render
+from server.studio import jobs, render, voiceover
 
 router = APIRouter(prefix="/studio")
 log = logging.getLogger("unhurried.studio")
@@ -27,6 +27,19 @@ def _view(job: dict) -> dict:
     return {**job, "clean_text": jobs.clean_text(job),
             "output_map": render.output_map(job["duration"], job["edits"]),
             "clone_available": jobs.clone_available()}
+
+
+@router.get("/list/recent")
+async def recent():
+    return voiceover.recent()
+
+
+@router.get("/{job_id}/ab.wav")
+async def ab(job_id: str, start: float = 0.0, seconds: float = 10.0):
+    """Before/after clip for the demo video: original, a short silence, then clean."""
+    data = await asyncio.to_thread(voiceover.ab_clip, _job(job_id), start, seconds)
+    return Response(data, media_type="audio/wav",
+                    headers={"Content-Disposition": 'attachment; filename="unhurried-before-after.wav"'})
 
 
 @router.post("/process")
@@ -52,8 +65,18 @@ async def get(job_id: str):
 
 
 @router.post("/{job_id}/reanalyze")
-async def reanalyze(job_id: str):
-    return _view(await jobs.reanalyze(_job(job_id)))
+async def reanalyze(job_id: str, retranscribe: bool = False):
+    return _view(await jobs.reanalyze(_job(job_id), retranscribe=retranscribe))
+
+
+@router.post("/{job_id}/manual")
+async def manual(job_id: str, request: Request):
+    """Cut a word the model missed (the person's own choice)."""
+    body = await request.json()
+    try:
+        return _view(jobs.add_manual_cut(_job(job_id), int(body.get("word", -1))))
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
 
 
 @router.post("/{job_id}/edits")
