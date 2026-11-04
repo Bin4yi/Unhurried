@@ -88,7 +88,8 @@ def score_run(clip: dict, events: list[dict]) -> dict:
         "model_lag_s": round(max(lags), 2) if lags else None,
         "reasons": [t.get("reason") for t in turns],
         "tool_calls": [{"name": c.get("name"), "args": c.get("args")} for c in calls],
-        "texts": [t.get("clean") for t in turns],
+        # the words of private recordings never go into a results file
+        "texts": [t.get("clean") for t in turns] if clip.get("public_audio") else [],
     }
 
 
