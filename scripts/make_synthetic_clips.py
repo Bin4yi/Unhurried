@@ -97,7 +97,7 @@ def main() -> int:
         path = (OUT / f"{cid}.wav").resolve()
         jobs.append((str(path), voices[i % 2], pieces))
         exp = {"tool": expected, "args": {}} if isinstance(expected, str) else {"tool": BOOK, "args": expected}
-        rows.append({"id": cid, "file": f"bench/audio/{cid}.wav", "kind": kind, "features": feats,
+        rows.append({"id": cid, "set": "synthetic", "file": f"bench/audio/{cid}.wav", "kind": kind, "features": feats,
                      "speech_end_s": None, "expected": exp,
                      "script": " ... ".join(t for t, _ in pieces), "consent": "synthetic",
                      "public_audio": True})

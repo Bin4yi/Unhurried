@@ -1,6 +1,6 @@
 # Unhurried: the turn-taking layer voice AI is missing, proven on the hardest case: stammering.
 
-**On my own free speech (set `real_self`), a normal voice bot replied while I was still talking TBD times; with Unhurried's default engine, TBD times. Invented words: TBD.** Same audio, same measure (cut-offs), streamed through the live server. [Results](bench/results.html).
+**On 15 recordings of my own free speech (set `real_self`, 8.8 minutes), a normal voice bot replied while I was still talking 14 times (8 of 15 recordings); with Unhurried's default engine, 2 times (2 of 15). Invented words: 0.** Same audio, same measure (cut-offs), streamed through the live server. [Results](bench/results.html).
 
 - Demo video: VIDEO_LINK
 - Voice editing on/off, my own voice: [`web/voice-over.html`](web/voice-over.html)
@@ -83,7 +83,15 @@ Two sets, never mixed. Every number below comes from a file in `bench/results/`.
 
 ### Real: my own voice (`real_self`)
 
-TBD: filled from the results file after the run.
+Run on Nov 5, 2026 ([results file](bench/results/20261105_000043_real_self.json)). 15 recordings of my own spontaneous speech, recorded live in Voice Studio. Free talk, so "understood" is not scored.
+
+| Turn engine | Cut-offs (recordings) | Replies while still talking | Early end-of-speech | Invented content (turns) |
+| --- | --- | --- | --- | --- |
+| Normal voice bot (baseline) | **8 / 15** | **14** | 21 | 0 / 29 |
+| Words + Spark check | 2 / 15 | 3 | 20 | 1 / 18 |
+| **Words + voice + Spark (default)** | **2 / 15** | **2** | 19 | **0 / 17** |
+
+The one invented turn (words + Spark) was flagged by the guard, so the person was asked to confirm. A small set: counts, not percentages.
 
 ### Synthetic (`synthetic`)
 

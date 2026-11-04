@@ -1,7 +1,7 @@
 # Demo voice-over script
 
 Simple English, short sentences. About 3 minutes in total.
-Numbers marked **TBD** come from `bench/results/` and are filled in after the benchmark run. Never say a number that is not in a results file.
+Numbers come from `bench/results/20261105_000043_real_self.json`. Never say a number that is not in a results file.
 
 **How to read this script:** look at the line, then say it **in your own words**, at your own pace. You do not need to read it exactly. Pauses and repeats are fine: Voice Studio will show them, and that is part of the demo.
 
@@ -75,11 +75,11 @@ Numbers marked **TBD** come from `bench/results/` and are filled in after the be
 
 **Say:**
 > I measured it on my own voice.
-> While I was still talking, a normal voice bot would have replied **TBD** times.
-> With Unhurried, it replied **TBD** times.
+> In fifteen recordings, while I was still talking, a normal voice bot replied **fourteen** times.
+> With Unhurried, it replied **two** times.
 > And zero invented words.
 
-**Caption:** *Measured on my own voice: TBD → TBD. Zero invented words.*
+**Caption:** *Measured on my own voice: 14 → 2 replies while I was still talking. Zero invented words.*
 
 ---
 

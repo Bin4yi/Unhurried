@@ -1,0 +1,1079 @@
+{
+  "run": "20261105_000043_real_self",
+  "set": "real_self",
+  "date": "2026-11-05 00:14",
+  "failed": [],
+  "configs": {
+    "baseline": {
+      "mode": "baseline"
+    },
+    "unhurried": {
+      "mode": "unhurried",
+      "engine": {
+        "spark_check": true
+      }
+    },
+    "sound_spark": {
+      "mode": "unhurried",
+      "engine": {
+        "spark_check": true,
+        "sound": true
+      }
+    }
+  },
+  "summary": {
+    "baseline": {
+      "clips": 15,
+      "stammer_clips": 15,
+      "fluent_clips": 0,
+      "cut_offs": 8,
+      "cut_ins": 14,
+      "understanding_clips": 0,
+      "cut_offs_fluent": 0,
+      "understood": 0,
+      "understood_stammer": 15,
+      "understood_fluent": 0,
+      "fluent_delay_median_s": null,
+      "fluent_delay_p95_s": null,
+      "invented_turns": 0,
+      "turns": 29,
+      "early_eos_stammer": 21,
+      "stammer_clips_with_early_eos": 12,
+      "confirms": 0,
+      "slow_runs": 0
+    },
+    "unhurried": {
+      "clips": 15,
+      "stammer_clips": 15,
+      "fluent_clips": 0,
+      "cut_offs": 2,
+      "cut_ins": 3,
+      "understanding_clips": 0,
+      "cut_offs_fluent": 0,
+      "understood": 0,
+      "understood_stammer": 15,
+      "understood_fluent": 0,
+      "fluent_delay_median_s": null,
+      "fluent_delay_p95_s": null,
+      "invented_turns": 1,
+      "turns": 18,
+      "early_eos_stammer": 20,
+      "stammer_clips_with_early_eos": 12,
+      "confirms": 4,
+      "slow_runs": 0,
+      "added_delay_vs_baseline": {
+        "n": 0,
+        "median_s": null,
+        "p95_s": null
+      }
+    },
+    "sound_spark": {
+      "clips": 15,
+      "stammer_clips": 15,
+      "fluent_clips": 0,
+      "cut_offs": 2,
+      "cut_ins": 2,
+      "understanding_clips": 0,
+      "cut_offs_fluent": 0,
+      "understood": 0,
+      "understood_stammer": 15,
+      "understood_fluent": 0,
+      "fluent_delay_median_s": null,
+      "fluent_delay_p95_s": null,
+      "invented_turns": 0,
+      "turns": 17,
+      "early_eos_stammer": 19,
+      "stammer_clips_with_early_eos": 12,
+      "confirms": 3,
+      "slow_runs": 0,
+      "added_delay_vs_baseline": {
+        "n": 0,
+        "median_s": null,
+        "p95_s": null
+      }
+    }
+  },
+  "rows": {
+    "baseline": [
+      {
+        "clip": "talk_01",
+        "kind": "talk",
+        "turns": 2,
+        "cut_off": true,
+        "cut_ins": 1,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.22,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 1.14,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_02",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.04,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 2
+      },
+      {
+        "clip": "talk_03",
+        "kind": "talk",
+        "turns": 2,
+        "cut_off": true,
+        "cut_ins": 1,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.7,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_04",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.98,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.56,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_05",
+        "kind": "talk",
+        "turns": 3,
+        "cut_off": true,
+        "cut_ins": 2,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.54,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end",
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 3
+      },
+      {
+        "clip": "talk_06",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.5,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_07",
+        "kind": "talk",
+        "turns": 2,
+        "cut_off": true,
+        "cut_ins": 1,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": -0.04,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 0.74,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_08",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.46,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_09",
+        "kind": "talk",
+        "turns": 2,
+        "cut_off": true,
+        "cut_ins": 1,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 2.32,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_10",
+        "kind": "talk",
+        "turns": 3,
+        "cut_off": true,
+        "cut_ins": 2,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.58,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end",
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_11",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.56,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.74,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_12",
+        "kind": "talk",
+        "turns": 4,
+        "cut_off": true,
+        "cut_ins": 3,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.46,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 3,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end",
+          "model_end",
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_13",
+        "kind": "talk",
+        "turns": 4,
+        "cut_off": true,
+        "cut_ins": 3,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.56,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 3,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end",
+          "model_end",
+          "model_end",
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_14",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.32,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.74,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_15",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.72,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "model_end"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      }
+    ],
+    "unhurried": [
+      {
+        "clip": "talk_01",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.78,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 0.98,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_02",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 6.0,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "max_wait"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_03",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.42,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.9,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_04",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.54,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_05",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.34,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.9,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 3
+      },
+      {
+        "clip": "talk_06",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.22,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 1,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_07",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.68,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_08",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.94,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.74,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_09",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 2.88,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 1.54,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_10",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.3,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 3,
+        "confirms": 1,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_11",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.44,
+        "invented": 1,
+        "guard_events": [
+          {
+            "kind": "names"
+          },
+          {
+            "kind": "names"
+          },
+          {
+            "kind": "names"
+          }
+        ],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_12",
+        "kind": "talk",
+        "turns": 3,
+        "cut_off": true,
+        "cut_ins": 2,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.26,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 0.9,
+        "reasons": [
+          "check_yes",
+          "check_yes",
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_13",
+        "kind": "talk",
+        "turns": 2,
+        "cut_off": true,
+        "cut_ins": 1,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.28,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 3,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout",
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_14",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.04,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 1.06,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_15",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.44,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.72,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      }
+    ],
+    "sound_spark": [
+      {
+        "clip": "talk_01",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.06,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 0.98,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_02",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 6.0,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "max_wait"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_03",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.58,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_04",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.54,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_05",
+        "kind": "talk",
+        "turns": 2,
+        "cut_off": true,
+        "cut_ins": 1,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.7,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.9,
+        "reasons": [
+          "words_sound",
+          "words_sound"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 3
+      },
+      {
+        "clip": "talk_06",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.5,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_07",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.12,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 1,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_08",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.22,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "words_sound"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_09",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 0.72,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 2,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_10",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.22,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_11",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 6.0,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 1,
+        "model_lag_s": 0.74,
+        "reasons": [
+          "max_wait"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_12",
+        "kind": "talk",
+        "turns": 2,
+        "cut_off": true,
+        "cut_ins": 1,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.34,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 4,
+        "confirms": 0,
+        "model_lag_s": 0.74,
+        "reasons": [
+          "check_yes",
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_13",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 1.52,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.82,
+        "reasons": [
+          "check_timeout"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_14",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 6.0,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 1,
+        "confirms": 0,
+        "model_lag_s": 0.74,
+        "reasons": [
+          "max_wait"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      },
+      {
+        "clip": "talk_15",
+        "kind": "talk",
+        "turns": 1,
+        "cut_off": false,
+        "cut_ins": 0,
+        "understood": true,
+        "understanding_scored": false,
+        "delay_s": 6.08,
+        "invented": 0,
+        "guard_events": [],
+        "early_eos": 0,
+        "confirms": 0,
+        "model_lag_s": 0.8,
+        "reasons": [
+          "max_wait"
+        ],
+        "tool_calls": [],
+        "texts": [],
+        "attempts": 1
+      }
+    ]
+  },
+  "usd": 0.9785
+}

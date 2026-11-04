@@ -19,3 +19,7 @@ bench/audio_private/
 .venv-clone/
 .clone-pkgs/
 studio_data/
+
+# Video work (large, local only)
+brag-output/
+video_build/

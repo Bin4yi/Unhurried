@@ -25,14 +25,14 @@
     input[type=range] { width: 100%; accent-color: var(--clay); }
     .texts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     @media (max-width: 920px) { .texts { grid-template-columns: 1fr; } }
-    .said, .cleaned { font: 400 22px/1.7 var(--serif); margin: 8px 0 0; }
-    .said .cut { color: var(--clay); text-decoration: line-through; text-decoration-thickness: 1.5px; }
-    .said span.now, .cleaned span.now { background: var(--sage-soft); border-radius: 6px; }
+    .said-text, .cleaned { font: 400 22px/1.7 var(--serif); margin: 8px 0 0; }
+    .said-text .cut { color: var(--clay); text-decoration: line-through; text-decoration-thickness: 1.5px; }
+    .said-text span.now, .cleaned span.now { background: var(--sage-soft); border-radius: 6px; }
     .panel-dim { opacity: .55; transition: opacity .3s; }
     .exports { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .exports input { width: 90px; border: 1px solid var(--line); background: var(--paper); border-radius: 10px; padding: 8px 10px; }
     body.demo { font-size: 19px; }
-    body.demo .said, body.demo .cleaned { font-size: 26px; }
+    body.demo .said-text, body.demo .cleaned { font-size: 26px; }
     body.demo .foot, body.demo #picker-row { display: none; }
   </style>
 </head>
@@ -80,7 +80,7 @@
   <section class="texts">
     <div class="card step" id="said-card">
       <h2 class="eyebrow">What I said</h2>
-      <p class="said" id="said"></p>
+      <p class="said-text" id="said"></p>
     </div>
     <div class="card step" id="clean-card">
       <h2 class="eyebrow">Clean</h2>
