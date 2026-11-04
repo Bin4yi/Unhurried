@@ -71,3 +71,26 @@ def test_typed_text_in_baseline_goes_straight_to_bot():
 
     run(go())
     assert bot.got == ["What time do you close?"]
+
+
+def test_session_survives_when_the_speech_stream_closes():
+    sent, bot = [], FakeBot()
+
+    async def go():
+        fake = FakeStream()
+
+        async def closed(pcm):
+            raise ConnectionError("audio backlog too large")
+
+        s = start_session(sent, fake, bot, mode="baseline")
+        await s.start()
+        fake.send = closed
+        await s.audio(b"\x00\x00" * 1920)          # must not raise
+        await s.audio(b"\x00\x00" * 1920)
+        await s.command({"type": "text", "text": "What time do you close?"})
+        await asyncio.sleep(0.02)
+        await s.stop()
+
+    run(go())
+    assert sum(e["type"] == "error" for e in sent) == 1
+    assert bot.got == ["What time do you close?"]    # typing and the bot still work

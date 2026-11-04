@@ -58,6 +58,9 @@ button, input, select { font: inherit; color: inherit; }
   max-width: 1280px; margin: 0 auto; padding: 12px 24px 48px;
 }
 @media (max-width: 920px) { .studio { grid-template-columns: 1fr; padding: 8px 16px 40px; } .top { padding: 18px 16px 6px; } }
+.studio.side-by-side { grid-template-columns: minmax(300px, 1fr) minmax(0, 1.55fr); }
+.studio.side-by-side .side { order: -1; }
+@media (max-width: 920px) { .studio.side-by-side { grid-template-columns: 1fr; } }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
 .eyebrow { font: 600 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px; }
 

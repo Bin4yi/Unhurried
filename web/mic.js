@@ -5,7 +5,10 @@ export const RATE = 24000;
 
 export async function startMic(onChunk, muted = () => false) {
   const stream = await navigator.mediaDevices.getUserMedia({
-    audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+    // A filmed take feeds a recording as the mic; browser processing would fill in its pauses.
+    audio: new URLSearchParams(location.search).get("badge") === "recording"
+      ? { channelCount: 1, echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+      : { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
   });
   const ctx = new AudioContext({ sampleRate: RATE });
   await ctx.audioWorklet.addModule(new URL("./capture-worklet.js", import.meta.url));

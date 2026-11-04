@@ -26,7 +26,9 @@ if (on) {
   const bar = document.createElement("div");
   bar.className = "demo-bar";
   bar.setAttribute("role", "status");
-  const live = document.body.dataset.demoBadge || "Live, not edited";
+  // Filmed with a recording as the microphone: say so instead of "live".
+  const recorded = new URLSearchParams(location.search).get("badge") === "recording";
+  const live = recorded ? "Real recording" : document.body.dataset.demoBadge || "Live, not edited";
   bar.innerHTML = `<span id="demo-label"></span><span class="demo-live"></span>`;
   bar.querySelector(".demo-live").textContent = live;
   if (live !== "Live, not edited") bar.querySelector(".demo-live").classList.add("recorded");

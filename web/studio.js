@@ -1,5 +1,5 @@
 // Unhurried Studio: talk to the booking assistant and see every turn decision.
-import { startMic } from "./mic.js";
+import { startMic, streamWav } from "./mic.js";
 import { demoLabel } from "./demo-mode.js";
 import { onResume, renderStats, resetInspector, sendLabel, showDecision, stats } from "./studio-inspector.js";
 
@@ -67,12 +67,6 @@ function addLine(list, who, text, extra = {}) {
     chip.textContent = `sent by ${sendLabel(extra.reason)}`;
     meta.appendChild(chip);
   }
-  if (extra.cut) {
-    const chip = document.createElement("span");
-    chip.className = "chip warn";
-    chip.textContent = "replied while you were mid-sentence";
-    meta.appendChild(chip);
-  }
   if (extra.raw && extra.raw !== text) {
     const btn = document.createElement("button");
     btn.className = "said-btn"; btn.type = "button"; btn.textContent = "show what I said";
@@ -91,6 +85,7 @@ function addLine(list, who, text, extra = {}) {
   line.append(label, body);
   box.appendChild(line);
   line.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  return line;
 }
 
 // ---------------------------------------------------------------- demo labels
@@ -149,9 +144,22 @@ function onMain(ev) {
   }
 }
 
+// A normal-bot turn was a cut-off only if the person then went on speaking: mark it then.
+let lastShadowTurn = null;
 function onShadow(ev) {
-  if (ev.type === "turn") addLine("compare-lines", "you", ev.raw, { cut: mainOpen });
-  else if (ev.type === "bot") addLine("compare-lines", "bot", ev.text);
+  if (ev.type === "turn") {
+    lastShadowTurn = addLine("compare-lines", "you", ev.raw);
+  } else if (ev.type === "bot") {
+    addLine("compare-lines", "bot", ev.text);
+  } else if (ev.type === "speech_start" && lastShadowTurn) {
+    const chip = document.createElement("span");
+    chip.className = "chip warn";
+    chip.textContent = "replied while you were mid-sentence";
+    lastShadowTurn.lastElementChild.appendChild(chip);
+    lastShadowTurn = null;
+    stats.saved += 1;
+    renderStats();
+  }
 }
 
 async function openSession(sessionMode, handler, extra = {}) {
@@ -187,13 +195,17 @@ async function begin() {
       openSession(mainMode, onMain, { keywords: words, ...extras }),
       mode === "compare" ? openSession("baseline", onShadow, { keywords: words, auto_confirm: true }) : null,
     ]);
-    stopMic = await startMic((chunk) => {
+    const onChunk = (chunk) => {
       const v = new Int16Array(chunk);
       let sum = 0;
       for (let i = 0; i < v.length; i += 4) sum += v[i] * v[i];
       level = Math.min(1, Math.sqrt(sum / (v.length / 4)) / 6000);
       for (const s of [main, shadow]) if (s && s.ws.readyState === 1) s.ws.send(chunk);
-    }, () => speechSynthesis.speaking);
+    };
+    // ?clip=/bench/audio/x.wav plays a recording into the same socket (filmed takes only)
+    const clip = new URLSearchParams(location.search).get("clip");
+    if (clip && clip.startsWith("/bench/audio/")) stopMic = playClip(clip, onChunk);
+    else stopMic = await startMic(onChunk, () => speechSynthesis.speaking);
   } catch (e) {
     setStatus("idle", "Could not start. Is the server running?");
     $("begin").disabled = false;
@@ -206,6 +218,16 @@ async function begin() {
   $("begin").lastElementChild.textContent = "End";
   $("begin").disabled = false;
   for (const b of document.querySelectorAll(".seg button")) b.disabled = true;
+}
+
+function playClip(url, onChunk) {
+  let stop = false;
+  (async () => {
+    await streamWav(await (await fetch(url)).arrayBuffer(), onChunk, () => stop);
+    const silence = new ArrayBuffer(3840);      // the stream must keep receiving audio
+    while (!stop) { onChunk(silence); await new Promise((r) => setTimeout(r, 80)); }
+  })();
+  return () => { stop = true; };
 }
 
 function end() {
@@ -240,6 +262,7 @@ for (const b of document.querySelectorAll(".seg button")) {
     mode = b.dataset.mode;
     for (const x of document.querySelectorAll(".seg button")) x.setAttribute("aria-pressed", String(x === b));
     $("compare-panel").hidden = mode !== "compare";
+    document.querySelector(".studio").classList.toggle("side-by-side", mode === "compare");
     $("stage-title").textContent = mode === "baseline" ? "Your turn (normal bot)" : "Your turn";
   };
 }

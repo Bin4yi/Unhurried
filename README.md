@@ -2,7 +2,6 @@
 
 **On 15 recordings of my own free speech (set `real_self`, 8.8 minutes), a normal voice bot replied while I was still talking 14 times (8 of 15 recordings); with Unhurried's default engine, 2 times (2 of 15). Invented words: 0.** Same audio, same measure (cut-offs), streamed through the live server. [Results](bench/results.html).
 
-- Demo video: VIDEO_LINK
 - Voice editing on/off, my own voice: [`web/voice-over.html`](web/voice-over.html)
 - Everything built so far: [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md)
 

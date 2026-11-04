@@ -60,6 +60,7 @@ class Session:
         self.last_speech_end: float | None = None
         self._tasks: list[asyncio.Task] = []
         self._stopped = False
+        self._stream_lost = False
         self.turn_count = 0
 
         # Personal timing: a max wait sent by the browser (Voice Passport) wins,
@@ -108,9 +109,17 @@ class Session:
             pass
 
     async def audio(self, pcm: bytes) -> None:
-        if self._stopped:
+        if self._stopped or self._stream_lost:
             return
-        await self.router.feed(pcm)
+        try:
+            await self.router.feed(pcm)
+        except Exception as exc:
+            # The speech service closed the stream (e.g. audio backlog). Keep the session:
+            # a turn already being finished still reaches the bot, and the person is told.
+            self._stream_lost = True
+            self.log.write("events", {"dir": "in", "type": "stream_lost", "error": type(exc).__name__})
+            await self.emit({"type": "error", "message": "The speech service stopped listening. Press End, then Begin."})
+            return
         if self.mode == "unhurried":
             await self.act(self.engine.tick())
 
